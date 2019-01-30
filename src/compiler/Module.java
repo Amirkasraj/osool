@@ -16,7 +16,7 @@ public abstract class Module {
 	public void clock() {
 		posteriorOutput = process(Input);
 		Input = prev.getOutput();
-
+		///?
 	}
 
 	protected Map<String, Integer> getOutput() {

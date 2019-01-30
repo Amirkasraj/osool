@@ -1,5 +1,6 @@
 package compiler;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class ALU extends Module {
@@ -10,6 +11,7 @@ public class ALU extends Module {
 
 	@Override
 	protected Map<String, Integer> process(Map<String, Integer> input) {
+        HashMap<String,Integer>ans=new HashMap<>();
 
 		int ALU_op1 = input.get("ALUOp1");
 		int ALU_op2 = input.get("ALUOp2");
@@ -50,22 +52,32 @@ public class ALU extends Module {
 				}
 			break;
 		}
+		ans.put("ALU_Result",ALU_output);
+		ans.put("Zero",zero_control);
+		ans.put("Branch",input.get("Branch"));
+		ans.put("MemRead",input.get("MemRead"));
+		ans.put("MemWrite",input.get("MemWrite"));
+		ans.put("MemtoReg",input.get("MemtoReg"));
+
 
 		if (Reg_Dst==1){
-			//TODO multi....
-		}
+			ans.put("BackWrite",rd_data);
+		}else {
+		    ans.put("BackWrite",rt_data);
+        }
 
 
 
 		// TODO jam o zarb o ina;
 		return null;
 	}
+
 	public String ALU_control(int ALU_op1,int ALU_op2,int func){
-		if (ALU_op1==0){
-			if (ALU_op2==0){
-				return "add";
-			return "subtract";
-		}else {
+		if (ALU_op1==0) {
+            if (ALU_op2 == 0)
+                return "add";
+            return "subtract";
+        }else{
 			if (ALU_op2==0){
 				if (func==0b100000)
 					return "add";
@@ -79,6 +91,7 @@ public class ALU extends Module {
 					return "slt";
 			}
 		}
+		return "";
 	}
 
 

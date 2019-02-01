@@ -94,5 +94,11 @@ public class ALU extends Module {
 		return "";
 	}
 
+	@Override
+	protected Map<String,Integer>log(){
+
+
+		return null;
+	}
 
 }

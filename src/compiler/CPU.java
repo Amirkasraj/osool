@@ -52,6 +52,7 @@ public class CPU {
 	}
 	
 	public Map<String, Integer> log() {
+
 		return null;
 		//az hame khorooji migire o mirize too map return mikone
 	}

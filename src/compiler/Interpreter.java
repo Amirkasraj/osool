@@ -4,7 +4,7 @@ import java.io.*;
 
 public class Interpreter {
 
-    BufferedReader br;
+    private BufferedReader br;
 
     public Interpreter(String fileDir) {
         File file = new File(fileDir);
@@ -22,20 +22,23 @@ public class Interpreter {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        if (st == null) st="";
         return st;
     }
 
-    public int register_num(String reg){
+    public static int register_num(String reg){
 
         return 0;
     }
-    public int to_int(String binary){
+    public static int to_int(String binary){
         return Integer.parseInt(binary,2);
     }
-    public String to_binary_string(int binary){
+    public static String to_binary_string(int binary){
         return Integer.toBinaryString(binary);
     }
-    public String toBinary(String code) {
+    public static String toBinary(String code) {
+        if (code.equals(""))
+            return "00000000000000000000000000000000";
         String[]str = code.split(" ");
         String final_code="";
         switch(str[0]){
@@ -69,7 +72,7 @@ public class Interpreter {
         }
 
 
-       return final_code;
+        return final_code;
     }
 
 

@@ -1,5 +1,7 @@
 package compiler;
 
+import sun.applet.resources.MsgAppletViewer;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,6 +16,7 @@ public abstract class Module {
 	}
 
 	public void clock() {
+		if (Input==null) return;
 		posteriorOutput = process(Input);
 		Input = prev.getOutput();
 		///?
@@ -36,4 +39,12 @@ public abstract class Module {
 	}
 
 	abstract protected Map<String, Integer> process(Map<String, Integer> input);
+
+	public void setPrev(Module prev_) {
+	    prev = prev_;
+    }
+
+    public void addToInput(String key, int value){
+	    priorOutput.put(key,value);
+    }
 }

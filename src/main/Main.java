@@ -18,6 +18,5 @@ public class Main {
                 cpu.clock();
             System.out.println(cpu.log());
         }
-
     }
 }

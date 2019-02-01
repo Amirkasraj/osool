@@ -35,7 +35,7 @@ public class Interpreter {
     public String to_binary_string(int binary){
         return Integer.toBinaryString(binary);
     }
-    public int toBinary(String code) {
+    public String toBinary(String code) {
         String[]str = code.split(" ");
         String final_code="";
         switch(str[0]){
@@ -69,7 +69,7 @@ public class Interpreter {
         }
 
 
-       return to_int(final_code);
+       return final_code;
     }
 
 

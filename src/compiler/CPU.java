@@ -30,7 +30,7 @@ public class CPU {
 		IF_ID = new MidRegister(insMem);
 
 		init.clear();
-		init.put(0x00000010,Interpreter.register_num("$PC"));
+		init.put(0x00000010,Interpreter.to_int(Interpreter.register_num("$PC")));
 
 		ID_EX = new MidRegister(null);
 		centralALU = new ALU(ID_EX);

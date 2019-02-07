@@ -18,7 +18,7 @@ public class Main {
             for (int c = 0; c<clock; c++)
                 cpu.clock();
             Map<String, Integer> a = cpu.log();
-            // chap kon oonai ke lazeme ro
+            // beriz to file
         }
     }
 }

@@ -17,7 +17,7 @@ public class MidRegister extends Module {
 	protected Map<String, Integer> process(Map<String, Integer> input) {
 		return input;
 	}
-	@Override
+
 	protected Map<String,Integer>log(){return null;}
 }
 

@@ -30,14 +30,13 @@ public class CPU {
 		IF_ID = new MidRegister(insMem);
 
 		init.clear();
-		init.put(0x00000010,Interpreter.to_int(Interpreter.register_num("$PC")));
-		//؟؟؟؟؟  ؟؟؟؟
+		init.put(0x00000010,Interpreter.register_num("$PC"));
 
-		ID_EX = new MidRegister(null);//؟/؟؟
+		ID_EX = new MidRegister(null);
 		centralALU = new ALU(ID_EX);
 		EX_MEM = new MidRegister(centralALU);
 
-		dataMem = new Memory(EX_MEM,init);//؟؟
+		dataMem = new Memory(EX_MEM,init);
 		PC = new MidRegister(dataMem);
 		MEM_WB = new MidRegister(dataMem);
 		regFile = new RegisterFile(IF_ID, init, MEM_WB);
@@ -48,10 +47,11 @@ public class CPU {
 	
 	public void clock() {
 
+		// hame clock mikhoran
+		//hame update mishan
 	}
 	
 	public Map<String, Integer> log() {
-
 		return null;
 		//az hame khorooji migire o mirize too map return mikone
 	}

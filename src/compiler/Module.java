@@ -1,24 +1,23 @@
 package compiler;
 
-import sun.applet.resources.MsgAppletViewer;
-
 import java.util.HashMap;
 import java.util.Map;
 
 public abstract class Module {
-	protected Map<String, Integer> Input,priorOutput, posteriorOutput;
+	protected Map<String, Integer> input,priorOutput, posteriorOutput;
 	protected Module prev;
 
 	public Module(Module prev_) {
-		Input = new HashMap<>();
+		input = new HashMap<>();
 		priorOutput = new HashMap<>();
 		prev = prev_;
 	}
 
 	public void clock() {
-		if (Input==null) return;
-		posteriorOutput = process(Input);
-		Input = prev.getOutput();
+		if (prev!=null)
+			input = prev.getOutput();
+		if (input ==null) return;
+		posteriorOutput = process(input);
 		///?
 	}
 
@@ -35,7 +34,7 @@ public abstract class Module {
 	}
 
 	public void write(String key, int value) {
-		Input.put(key, value);
+		input.put(key, value);
 	}
 
 	abstract protected Map<String, Integer> process(Map<String, Integer> input);
@@ -45,6 +44,6 @@ public abstract class Module {
 	}
 
 	public void addToInput(String key, int value){
-		priorOutput.put(key,value);
+		input.put(key,value);
 	}
 }

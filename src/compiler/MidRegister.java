@@ -10,12 +10,18 @@ public class MidRegister extends Module {
 	
 	@Override
 	public void clock() {
-		
+		super.clock();
+		priorOutput = posteriorOutput;
 	}
 
 	@Override
 	protected Map<String, Integer> process(Map<String, Integer> input) {
 		return input;
+	}
+
+	@Override
+	public void update() {
+		return;
 	}
 
 	protected Map<String,Integer>log(){return null;}

@@ -24,9 +24,11 @@ public class ALU extends Module {
 
 	@Override
 	protected Map<String, Integer> process(Map<String, Integer> input) {
-        HashMap<String,Integer>ans=new HashMap<>();
+		if (input.equals(null) || input.size()==0)
+			return null;
+		HashMap<String,Integer>ans=new HashMap<>(input);
 
-        Pc_4=input.get("Pc_4");
+        Pc_4=input.get("pc_4");
         ALU_op1 = input.get("ALUOp1");
         ALU_op2 = input.get("ALUOp2");
         ALU_src = input.get("ALUSrc");
@@ -84,11 +86,7 @@ public class ALU extends Module {
 		}else {
 		    ans.put("BackWrite",rt_data);
         }
-
-
-
-		// TODO jam o zarb o ina;
-		return null;
+		return ans;
 	}
 
 	public String ALU_control(int ALU_op1,int ALU_op2,int func){

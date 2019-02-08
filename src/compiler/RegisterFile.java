@@ -13,8 +13,15 @@ public class RegisterFile extends Memory {
 
     @Override
     public void clock() {
-        Input.putAll(wb.getOutput());
-        posteriorOutput = process(Input);
-        Input = prev.getOutput();
+        if (input.equals(null) || input.size()==0)
+            return;
+        input.putAll(wb.getOutput());
+        posteriorOutput = process(input);
+        processWB();
+        input = prev.getOutput();
+    }
+
+    private void processWB() {
+
     }
 }

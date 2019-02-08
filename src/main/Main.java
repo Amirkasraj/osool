@@ -17,8 +17,6 @@ public class Main {
             CPU cpu = new CPU(interpreter);
             for (int c = 0; c<clock; c++)
                 cpu.clock();
-            Map<String, Integer> a = cpu.log();
-            // beriz to file
         }
     }
 }

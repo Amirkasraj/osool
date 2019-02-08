@@ -64,7 +64,7 @@ public class Interpreter {
     public static String toBinary(String code) {
         if (code.equals(""))
             return "00000000000000000000000000000000";
-        String[]str = code.split(" ()");
+        String[]str = code.split(" ()");                    // TODO: "," ham masalast
         String final_code="";
         switch(str[0]){
             case "add":

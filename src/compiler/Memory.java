@@ -16,15 +16,20 @@ public class Memory extends Module{
 
     @Override
     protected Map<String, Integer> process(Map<String, Integer> input) {
-        HashMap<String, Integer> ans = new HashMap<>();
+        if (input==null || input.size()==0)
+            return null;
+        HashMap<String, Integer> ans = new HashMap<>(input);
         int index = input.get("index");
-        int write = input.get("write");
-        if (write == 0){
-            ans.put("data",arr[index]);
+        ans.remove("index");
+        if (input.containsKey("write")) {
+            ans.remove("write");
+            int data = input.get("data");
+            ans.remove("data");
+            arr[index] = data;
         } else {
-            ans.clear();
-            // che konim ?
+            ans.put("data",arr[index]);
         }
+
         return ans;
     }
 

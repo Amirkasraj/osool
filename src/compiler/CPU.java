@@ -1,8 +1,6 @@
 package compiler;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class CPU {
 	private MidRegister PC, IF_ID, ID_EX, EX_MEM, MEM_WB;
@@ -17,6 +15,7 @@ public class CPU {
 
 	public static int MAXMEM = 100;
 	public static boolean HAZARD = true;
+	public Set<Integer>branch_set = new HashSet<Integer>();
 
 	public CPU(Interpreter inter_) {
 		interpreter = inter_;
@@ -28,7 +27,9 @@ public class CPU {
 			String sbin = Interpreter.toBinary(s);
 			//System.out.println(sbin);
 			int nbin = Interpreter.to_int(sbin);
-
+			int op = (nbin>>26);
+			if (op==4)
+				branch_set.add(l);
 			//System.out.println(nbin);
 			init.put(l,nbin);
 		}
@@ -61,6 +62,7 @@ public class CPU {
 		array.add(dataMem);
 		array.add(MEM_WB);
 	}
+
 
 	public void clock() {
 

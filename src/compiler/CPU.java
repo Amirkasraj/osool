@@ -1,6 +1,5 @@
 package compiler;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,9 +9,6 @@ public class CPU {
 	private Memory insMem, dataMem;
 	private RegisterFile regFile;
 	private ALU centralALU;
-	private Control control;
-
-	private ArrayList<Module> array;
 
 	public static int MAXMEM = 100;
 
@@ -30,52 +26,32 @@ public class CPU {
 			init.put(l,nbin);
 		}
 
-		PC = new MidRegister(null);
-		PC.addToInput("index",0x00000010 / 4);
-		insMem = new Memory(PC, init);
+		insMem = new Memory(null, init);
 		IF_ID = new MidRegister(insMem);
-		control = new Control(IF_ID);
 
-		ID_EX = new MidRegister(null);
+		init.clear();
+		init.put(0x00000010,Interpreter.to_int(Interpreter.register_num("$PC")));
+
+
+		ID_EX = new MidRegister(null);//؟/؟؟
 		centralALU = new ALU(ID_EX);
 		EX_MEM = new MidRegister(centralALU);
 
-		dataMem = new Memory(EX_MEM,init);
+		dataMem = new Memory(EX_MEM,init);//؟؟
+		PC = new MidRegister(dataMem);
 		MEM_WB = new MidRegister(dataMem);
-		regFile = new RegisterFile(control, init, MEM_WB);
+		regFile = new RegisterFile(IF_ID, init, MEM_WB);
+		insMem.setPrev(PC);
 		ID_EX.setPrev(regFile);
 
-		array = new ArrayList<>();
-		array.add(PC);
-		array.add(insMem);
-		array.add(IF_ID);
-		array.add(control);
-		array.add(regFile);
-		array.add(ID_EX);
-		array.add(centralALU);
-		array.add(EX_MEM);
-		array.add(dataMem);
-		array.add(MEM_WB);
 	}
 	
 	public void clock() {
 
-		for (Module x: array) {
-			x.clock();
-			System.out.println(x.getClass());
-		}
-		System.out.println();
-		for (Module x: array)
-			x.update();
-
-		if (centralALU.getOutput()!=null && centralALU.getOutput().containsKey("branch"))
-			PC.addToInput("index", centralALU.getOutput().get("immediate"));
-		else
-			PC.addToInput("index", PC.getOutput().get("index")+1);
-
 	}
 	
 	public Map<String, Integer> log() {
+
 		return null;
 		//az hame khorooji migire o mirize too map return mikone
 	}

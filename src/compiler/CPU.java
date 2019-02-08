@@ -11,10 +11,12 @@ public class CPU {
 	private RegisterFile regFile;
 	private ALU centralALU;
 	private Control control;
+	private Forward forward;
 
 	private ArrayList<Module> array;
 
 	public static int MAXMEM = 100;
+	public static boolean HAZARD = true;
 
 	public CPU(Interpreter inter_) {
 		interpreter = inter_;
@@ -26,6 +28,7 @@ public class CPU {
 			String sbin = Interpreter.toBinary(s);
 			//System.out.println(sbin);
 			int nbin = Interpreter.to_int(sbin);
+
 			//System.out.println(nbin);
 			init.put(l,nbin);
 		}
@@ -38,6 +41,7 @@ public class CPU {
 
 		ID_EX = new MidRegister(null);
 		centralALU = new ALU(ID_EX);
+		forward = new Forward(centralALU);
 		EX_MEM = new MidRegister(centralALU);
 
 		dataMem = new Memory(EX_MEM,init);
@@ -72,6 +76,12 @@ public class CPU {
 			PC.addToInput("index", centralALU.getOutput().get("immediate"));
 		else
 			PC.addToInput("index", PC.getOutput().get("index")+1);
+
+		if (HAZARD){
+			for (String x: forward.getOutput().keySet())
+				centralALU.addToInput(x,forward.getOutput().get(x));
+
+		}
 
 	}
 	

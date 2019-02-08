@@ -39,8 +39,10 @@ public class Control extends Module {
             int immediate = ins;
             ans.put("immediate",immediate);
         }
-        //System.out.println(ans);
+
+        System.out.println(ans);
         return ans;
+
     }
 
     @Override

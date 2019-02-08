@@ -1,5 +1,6 @@
 package compiler;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class RegisterFile extends Memory {
@@ -13,15 +14,9 @@ public class RegisterFile extends Memory {
 
     @Override
     public void clock() {
-        if (input.equals(null) || input.size()==0)
-            return;
+        input = prev.getOutput();
+        if (input==null) input = new HashMap<>();
         input.putAll(wb.getOutput());
         posteriorOutput = process(input);
-        processWB();
-        input = prev.getOutput();
-    }
-
-    private void processWB() {
-
     }
 }

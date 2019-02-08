@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Memory extends Module{
-    private int arr[];
+    protected int arr[];
 
     public Memory(Module prev_, Map<Integer,Integer> init) {
         super(prev_);
@@ -16,9 +16,10 @@ public class Memory extends Module{
 
     @Override
     protected Map<String, Integer> process(Map<String, Integer> input) {
-        if (input==null || input.size()==0)
+        if (input==null || !(input.containsKey("index")))
             return null;
         HashMap<String, Integer> ans = new HashMap<>(input);
+
         int index = input.get("index");
         ans.remove("index");
         if (input.containsKey("write")) {

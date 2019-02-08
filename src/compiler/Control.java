@@ -15,6 +15,8 @@ public class Control extends Module {
             return null;
         HashMap<String,Integer> ans = new HashMap<>(input);
         int ins = input.get("data");
+        int pc4 = input.get("pc_4");
+        ans.put("pc_4",pc4);
         System.out.println(ins+" data in control");
         ans.remove("data");//؟؟
         int opcode = (ins>>26);

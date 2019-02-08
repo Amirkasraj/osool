@@ -64,6 +64,27 @@ public class CPU {
 
 	public void clock() {
 
+		clockElements();
+
+		if (HAZARD){
+			for (String x: forward.getOutput().keySet())
+				centralALU.addToInput(x,forward.getOutput().get(x));
+			int pc = PC.getOutput().get("index");
+			if (true) { // pc in set
+				clockElements();
+				clockElements();
+				clockElements();
+			}
+		}
+
+		if (centralALU.getOutput()!=null && centralALU.getOutput().containsKey("branch"))
+			PC.addToInput("index", centralALU.getOutput().get("immediate"));
+		else
+			PC.addToInput("index", PC.getOutput().get("index")+1);
+
+	}
+
+	private void clockElements(){
 		for (Module x: array) {
 			x.clock();
 			System.out.println(x.getClass());
@@ -71,18 +92,6 @@ public class CPU {
 		System.out.println();
 		for (Module x: array)
 			x.update();
-
-		if (centralALU.getOutput()!=null && centralALU.getOutput().containsKey("branch"))
-			PC.addToInput("index", centralALU.getOutput().get("immediate"));
-		else
-			PC.addToInput("index", PC.getOutput().get("index")+1);
-
-		if (HAZARD){
-			for (String x: forward.getOutput().keySet())
-				centralALU.addToInput(x,forward.getOutput().get(x));
-
-		}
-
 	}
 
 	public Map<String, Integer> log() {

@@ -61,7 +61,7 @@ public class CPU {
 		array.add(dataMem);
 		array.add(MEM_WB);
 	}
-	
+
 	public void clock() {
 
 		for (Module x: array) {
@@ -84,7 +84,7 @@ public class CPU {
 		}
 
 	}
-	
+
 	public Map<String, Integer> log() {
 		return null;
 		//az hame khorooji migire o mirize too map return mikone

@@ -15,8 +15,10 @@ public class Control extends Module {
             return null;
         HashMap<String,Integer> ans = new HashMap<>(input);
         int ins = input.get("data");
-        System.out.println(ins);
-        ans.remove("data");
+        int pc4 = input.get("pc_4");
+        ans.put("pc_4",pc4);
+        System.out.println(ins+" data in control");
+        ans.remove("data");//؟؟
         int opcode = (ins>>26);
         ins^= (opcode<<26);
         ans.put("opcode",opcode);
@@ -35,9 +37,54 @@ public class Control extends Module {
             ans.put("shamt",shamt);
             int func = (ins);
             ans.put("func",func);
+            //control lines
+            ans.put("ALUOp1",0);
+            ans.put("ALUOp2",1);
+            ans.put("Branch",0);
+            ans.put("MemRead",0);
+            ans.put("MemWrite",0);
+            ans.put("MemtoReg",0);
+            ans.put("RegWrite",1);
+            ans.put("ALUSrc",0);
+            ans.put("RegDst",1);
+
         }else {
             int immediate = ins;
             ans.put("immediate",immediate);
+            if (opcode==35){// lw
+                //control lines
+                ans.put("ALUOp1",0);
+                ans.put("ALUOp2",0);
+                ans.put("Branch",0);
+                ans.put("MemRead",1);
+                ans.put("MemWrite",0);
+                ans.put("MemtoReg",1);
+                ans.put("RegWrite",1);
+                ans.put("ALUSrc",1);
+                ans.put("RegDst",0);
+            }else if (opcode==43){// sw
+                //control lines
+                ans.put("ALUOp1",0);
+                ans.put("ALUOp2",0);
+                ans.put("Branch",0);
+                ans.put("MemRead",0);
+                ans.put("MemWrite",1);
+                ans.put("MemtoReg",0);//x
+                ans.put("RegWrite",0);
+                ans.put("ALUSrc",1);
+                ans.put("RegDst",0);//x
+            }else if (opcode==4){// beq
+                //control lines
+                ans.put("ALUOp1",1);
+                ans.put("ALUOp2",0);
+                ans.put("Branch",1);
+                ans.put("MemRead",0);
+                ans.put("MemWrite",0);
+                ans.put("MemtoReg",0);//x
+                ans.put("RegWrite",0);
+                ans.put("ALUSrc",0);
+                ans.put("RegDst",0);//x
+            }
         }
 
         System.out.println(ans);

@@ -12,10 +12,11 @@ public class CPU {
 	private Forward forward;
 
 	private ArrayList<Module> array;
+	public Set<Integer> branch_set = new HashSet<Integer>();
+
 
 	public static int MAXMEM = 100;
 	public static boolean HAZARD = true;
-	public Set<Integer>branch_set = new HashSet<Integer>();
 
 	public CPU(Interpreter inter_) {
 		interpreter = inter_;
@@ -72,7 +73,7 @@ public class CPU {
 			for (String x: forward.getOutput().keySet())
 				centralALU.addToInput(x,forward.getOutput().get(x));
 			int pc = PC.getOutput().get("index");
-			if (true) { // pc in set
+			if (branch_set.contains(pc)) { // pc in set
 				clockElements();
 				clockElements();
 				clockElements();

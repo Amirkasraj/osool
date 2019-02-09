@@ -33,12 +33,13 @@ public class ALU extends Module {
         ALU_op2 = input.get("ALUOp2");
         ALU_src = input.get("ALUSrc");
         Reg_Dst = input.get("RegDst");// az rt biad 0 , ya az rd biad 1/
-		Reg_data1 = input.get("RegData1");
-		int Reg_data2 = input.get("RegData2");
-		int offset_data= input.get("Offset_Data");
+		Integer rs = input.get("rs");
+		Integer rt = input.get("rt");
+		Integer rd = input.get("rd");
+		Reg_data1 = input.get(rs.toString());
+		int Reg_data2 = input.get(rt.toString());
+		int offset_data= input.get("immediate");
 		// integer binary ??!!! important!
-		int rt_data = input.get("rt_Data");
-		int rd_data = input.get("rd_Data");
 		// int pc+4
 		//int other control lines
 		second_in=Reg_data2;
@@ -82,9 +83,9 @@ public class ALU extends Module {
 
 
 		if (Reg_Dst==1){
-			ans.put("BackWrite",rd_data);
+			ans.put("wb",rd);
 		}else {
-		    ans.put("BackWrite",rt_data);
+		    ans.put("wb",rt);
         }
 		return ans;
 	}

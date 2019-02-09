@@ -21,7 +21,7 @@ public class Memory extends Module{
         HashMap<String, Integer> ans = new HashMap<>(input);
 
         int index = input.get("index");
-        ans.remove("index");
+        //ans.remove("index");
         if (input.containsKey("write")) {
             ans.remove("write");
             int data = input.get("data");

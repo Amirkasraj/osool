@@ -42,12 +42,14 @@ public class ALU extends Module {
 		// integer binary ??!!! important!
 		// int pc+4
 		//int other control lines
+		int branch_data = Pc_4 + offset_data;
+		ans.put("Branch_data",branch_data);
 		second_in=Reg_data2;
 		ALU_output=0b0;
 		int zero_control=0;
 		if (ALU_src==1)
 			second_in=offset_data;
-		int func=input.get("func");
+		int func=(offset_data<<26);
 		switch (ALU_control(ALU_op1,ALU_op2,func)){
 			case "add":
 				ALU_output=Reg_data1+second_in;
@@ -74,8 +76,8 @@ public class ALU extends Module {
 		MemWrite=input.get("MemWrite");
 		MemtoReg=input.get("MemtoReg");
 
+		branch = (zero_control & branch);
 		ans.put("ALU_Result",ALU_output);
-		ans.put("Zero",zero_control);
 		ans.put("Branch",branch);
 		ans.put("MemRead",MemRead);
 		ans.put("MemWrite",MemWrite);
@@ -87,6 +89,8 @@ public class ALU extends Module {
 		}else {
 		    ans.put("wb",rt);
         }
+
+
 		return ans;
 	}
 

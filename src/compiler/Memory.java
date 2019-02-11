@@ -38,4 +38,10 @@ public class Memory extends Module{
         return ans;
     }
 
+    public int read(int index) {
+        Integer ans= mem.get(index);
+        if (ans==null) ans = 0;
+        return ans;
+    }
+
 }

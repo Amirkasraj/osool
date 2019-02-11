@@ -22,6 +22,7 @@ public class Control extends Module {
         ans.put("opcode",opcode);
         int rs = (ins>>21);
         ins ^= (rs<<21);
+        ans.put("rs",rs);
         ans.put("index0",rs);
         ans.put("write0",0);
         int rt = (ins>>16);

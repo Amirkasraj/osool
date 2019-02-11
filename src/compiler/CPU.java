@@ -10,12 +10,15 @@ public class CPU {
 	private Control control;
 	private int PC = 0x00000010 / 4;
 	private Map<String,Integer> forwarding;
+	private Map<Integer,Integer> writeBack;
 	private Integer clockNumber=0;
 
 	private ArrayList<Module> array;
 	public Set<Integer> branch_set = new HashSet<Integer>();
 
 	public static boolean HAZARD = true;
+
+	private String[] controls = {"ALUOp1","ALUOp2","Branch","MemRead","MemWrite","MemtoReg","RegWrite","ALUSrc","RegDst"};
 
 	public CPU(Interpreter inter_) {
 		interpreter = inter_;
@@ -26,10 +29,12 @@ public class CPU {
 		IF_ID = new MidRegister(insMem);
 		control = new Control(IF_ID);
 		init = new HashMap<>();
+		init.put(29,0x00FF0000);
 		regFile = new Memory(control, init);
 		ID_EX = new MidRegister(regFile);
 		centralALU = new ALU(ID_EX);
 		EX_MEM = new MidRegister(centralALU);
+		init = new HashMap<>();
 		init.put(0x00000100,100);
 		dataMem = new Memory(EX_MEM,init);
 		MEM_WB = new MidRegister(dataMem);
@@ -51,6 +56,7 @@ public class CPU {
 
 	public void clock() {
 
+		writeBack = new HashMap<>();
 		// Hazard
 		if (HAZARD){
 			if (MEM_WB.getOutput().containsKey("data0")){
@@ -62,6 +68,8 @@ public class CPU {
 				Integer key = centralALU.getOutput().get("wb");
 				int value = centralALU.getOutput().get("ALU_Result");
 				forwarding.put(key.toString(),value);
+				writeBack.put(key,value);
+				writeBack.put(-1,MEM_WB.getOutput().get("ins"));
 			}
 			for (String key: forwarding.keySet())
 				centralALU.addToInput(key,forwarding.get(key));
@@ -74,10 +82,20 @@ public class CPU {
 		clockElements();
 
 		// PC
-		if (centralALU.getOutput()!=null && centralALU.getOutput().containsKey("branch"))
+		if (centralALU.getOutput()!=null && centralALU.getOutput().containsKey("goto") && centralALU.getOutput().get("goto")==1)
 			PC = centralALU.getOutput().get("ALU_Result");
 		else
 			PC++;
+
+		// WB
+
+		for(Integer x: writeBack.keySet()) {
+			if (x<0)
+				continue;
+			regFile.addToInput("index2",x);
+			regFile.addToInput("write2",1);
+			regFile.addToInput("data2",writeBack.get(x));
+		}
 	}
 
 	private void clockElements(){
@@ -90,16 +108,84 @@ public class CPU {
 	public String log() {
 		String ans = "";
 
-		ans+="Clock number: " + clockNumber.toString() + "\n";
+		ans += "Clock number: " + clockNumber.toString() + "\n";
 
-		ans += "Instruction memory: " + insMem.getOutput().get("data0") + "\n";
-		ans += "Registers: " + regFile.getOutput().get("ins") + "\n";
-		ans += "ALU: " + centralALU.getOutput().get("ins") + "\n";
-		ans += "Data memory: " + dataMem.getOutput().get("ins") + "\n";
-		ans += "Write back: " + MEM_WB.getOutput().get("ins") + "\n";
-
-		ans+="ID_EX: " + ID_EX.getOutput().get("ins") + "\n";
+		ans += "	Pipeline: \n";
+		ans += "		IF : " + Interpreter.to_binary_string(insMem.getOutput().get("data0"),32) + "\n";
+		ans += "		ID : " + Interpreter.to_binary_string(regFile.getOutput().get("ins"),32) + "\n";
+		ans += "		EX : " + Interpreter.to_binary_string(centralALU.getOutput().get("ins"),32) + "\n";
+		ans += "		MEM: " + Interpreter.to_binary_string(dataMem.getOutput().get("ins"),32) + "\n";
+		ans += "		WB : " + Interpreter.to_binary_string(writeBack.get(-1),32) + "\n";
 		ans += "\n";
+
+		ans += "	Middle registers:\n";
+		ans+="		IF/ID: \n";
+		ans += "			PC+4: " + IF_ID.getOutput().get("pc_4") + "*4\n";
+
+		ans+="		ID/EX: \n";
+		ans += "			PC+4: " + ID_EX.getOutput().get("pc_4") + "*4\n";
+		ans += "			rs: " + Interpreter.to_binary_string(ID_EX.getOutput().get("rs"),5) + "\n";
+		ans += "			rt: " + Interpreter.to_binary_string(ID_EX.getOutput().get("rt"),5) + "\n";
+		ans += "			immediate: " + Interpreter.to_binary_string(ID_EX.getOutput().get("immediate"),16) + "\n";
+
+		ans+="		EX/MEM: \n";
+		ans += "			PC+4: " + EX_MEM.getOutput().get("pc_4") + "*4\n";
+		ans += "			ALU result: " + EX_MEM.getOutput().get("ALU_Result") + "\n";
+		ans += "			branch or not: " + EX_MEM.getOutput().get("goto") + "\n";
+
+		ans+="		MEM/WB: \n";
+		ans += "			PC+4: " + MEM_WB.getOutput().get("pc_4") + "*4\n";
+		ans += "			Memory data: "+MEM_WB.getOutput().get("data0") + "\n";
+		ans += "\n";
+
+		ans += "	Pipeline control values:\n";
+		ans += "		ID/EX:\n";
+		for(String c: controls)
+			ans += "			"+c +": " + ID_EX.getOutput().get(c) + "\n";
+		ans += "		EX/MEM:\n";
+		for(String c: controls)
+			ans += "			"+c +": " + EX_MEM.getOutput().get(c) + "\n";
+		ans += "		MEM/WB:\n";
+		for(String c: controls)
+			ans += "			"+c +": " + MEM_WB.getOutput().get(c) + "\n";
+		ans += "\n";
+
+		ans += "	Register file data:\n";
+		ans += "		Register data 0: " + regFile.getOutput().get("data0") +"\n";
+		ans += "		Register data 1: " + regFile.getOutput().get("data1") +"\n";
+		ans += "\n";
+
+		ans += "	Memory data: " + dataMem.getOutput().get("data0") +"\n";
+		ans += "\n";
+
+		ans += "	ALUs:\n";
+		ans += "		Main ALU:\n";
+		Integer rs = centralALU.getOutput().get("rs");
+		Integer rt = centralALU.getOutput().get("rt");
+		String valueS = "null";
+		if (rs!=null) valueS = centralALU.getOutput().get(rs.toString()).toString();
+		String valueT = "null";
+		if (rs!=null) valueT = centralALU.getOutput().get(rt.toString()).toString();
+		ans += "			Inputs: " + valueS + ", " + valueT +  "\n";
+		ans += "			Output: " + centralALU.getOutput().get("ALU_Result") + "\n";
+
+		Integer value = -1;
+		if (centralALU.getOutput().get("immediate")!=null)
+			value = centralALU.getOutput().get("immediate") + centralALU.getOutput().get("pc_4");
+		ans += "		Branch ALU: " + value + "\n";
+		ans += "		PC ALU: "+ PC+4 + "\n";
+		ans += "\n";
+
+		ans += "	Register values: \n";
+		for (Integer i=0;i<=4;i++) {
+			String x = "$t" + i.toString();
+			ans += "		"+x+": "+ regFile.read(i+8) + "\n";
+		}
+		ans += "		$sp: " + regFile.read(29) +"\n";
+		ans += "		$ra: " + regFile.read(31) +"\n";
+
+
+		ans += "-----------------------------\n";
 		return ans;
 	}
 }

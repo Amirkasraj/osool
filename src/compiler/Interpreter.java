@@ -25,58 +25,59 @@ public class Interpreter {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        System.out.println(st);
         return st;
     }
 
     public static String register_num(String reg){
         if (reg.charAt(1)=='t'){
             if (Integer.parseInt(reg.substring(2))<8)
-                return to_binary_string(8+Integer.parseInt(reg.substring(2)));
-            return to_binary_string(18+Integer.parseInt(reg.substring(2)));
+                return to_binary_string(8+Integer.parseInt(reg.substring(2)),5);
+            return to_binary_string(18+Integer.parseInt(reg.substring(2)),5);
         }else if (reg.charAt(1)=='s'){
-            return to_binary_string(16+Integer.parseInt(reg.substring(2)));
+            return to_binary_string(16+Integer.parseInt(reg.substring(2)),5);
         }else if (reg.charAt(1)=='P'&&reg.charAt(2)=='C'){
-            return to_binary_string(32);//?
+            return to_binary_string(32,5);//?
         }else if (reg.charAt(1)=='a'){
-            return to_binary_string(4+Integer.parseInt(reg.substring(2)));
+            return to_binary_string(4+Integer.parseInt(reg.substring(2)),5);
         }else if (reg.charAt(1)=='v'){
-            return to_binary_string(2+Integer.parseInt(reg.substring(2)));
+            return to_binary_string(2+Integer.parseInt(reg.substring(2)),5);
         }else if (reg.charAt(1)=='k'){
-            return to_binary_string(26+Integer.parseInt(reg.substring(2)));
+            return to_binary_string(26+Integer.parseInt(reg.substring(2)),5);
         }else if (reg.substring(0,2).equals("ra")){
-            return to_binary_string(31);
+            return to_binary_string(31,5);
+        }else if (reg.substring(0,2).equals("sp")) {
+            return to_binary_string(29, 5);
+        }else if (reg.substring(0,2).equals("$z")) {
+            return to_binary_string(0, 5);
         }
         return "";
     }
     public static int to_int(String binary){
+        if (binary.equals("")) binary = "0";
         int r = Integer.parseInt(binary,2);
         return r;
     }
-    public static String to_binary_string(int binary){
+    public static String to_binary_string(Integer binary,int n){
+        if (binary==null) return "null";
         String out = Integer.toBinaryString(binary);
-        for (int i=0;i<(5-out.length());i++)
+        while (out.length()<n)
             out="0"+out;
         return out;
     }
-    public static String to_binary_string16(int binary){
-        String out = Integer.toBinaryString(binary);
-        for (int i=0;i<(16-out.length());i++)
-            out="0"+out;
-        return out;
-    }
+
     public static String toBinary(String code) {
         Map<String,Integer> binary = new HashMap<>();
         if (code.equals(""))
             return "00000000000000000000000000000000";
 
-        String[]str = code.split(" ()");                    // TODO: "," ham masalast
+        String[]str = code.split(" |(|)|,");                    // TODO: "," ham masalast
         String final_code="";
         switch(str[0]){
             case "add":
                 final_code=final_code+"000000"+register_num(str[2])+register_num(str[3])+register_num(str[1])+"00000"+"100000";
             break;
             case "sub":
-                System.out.println("Hi 0080");
                 final_code=final_code+"000000"+register_num(str[2])+register_num(str[3])+register_num(str[1])+"00000"+"100010";
             break;
             case "and":
@@ -92,13 +93,13 @@ public class Interpreter {
                 final_code=final_code+"000000"+register_num(str[2])+register_num(str[3])+register_num(str[1])+"00000"+"101010";
             break;
             case "beq":
-                final_code=final_code+"000100"+register_num(str[1])+register_num(str[2])+to_binary_string16(Integer.parseInt(str[3]));
+                final_code=final_code+"000100"+register_num(str[1])+register_num(str[2])+to_binary_string(Integer.parseInt(str[3]),16);
             break;
             case "lw":
-                final_code=final_code+"100011"+register_num(str[3])+register_num(str[1])+to_binary_string16(Integer.parseInt(str[2]));//??? 16
+                final_code=final_code+"100011"+register_num(str[3])+register_num(str[1])+to_binary_string(Integer.parseInt(str[2]),16);
             break;
             case "sw":
-                final_code=final_code+"101011"+register_num(str[3])+register_num(str[1])+to_binary_string16(Integer.parseInt(str[2]));
+                final_code=final_code+"101011"+register_num(str[3])+register_num(str[1])+to_binary_string(Integer.parseInt(str[2]),16);
             break;
         }
         return final_code;

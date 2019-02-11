@@ -28,10 +28,15 @@ public class ALU extends Module {
         ALU_op2 = input.get("ALUOp2");
         ALU_src = input.get("ALUSrc");
         Reg_Dst = input.get("RegDst");// az rt biad 0 , ya az rd biad 1/
-		Integer rd = input.get("rd");
+		Integer rs = input.get("rs");
 		Integer rt = input.get("rt");
+		Integer rd = input.get("rd");
 		Reg_data1 = input.get("data0");
 		int Reg_data2 = input.get("data1");
+		ans.remove("data0");
+		ans.remove("data1");
+		ans.put(rs.toString(),Reg_data1);
+		ans.put(rt.toString(),Reg_data2);
 		int offset_data= input.get("immediate");
 		int branch_data = pc_4 + offset_data;
 		ans.put("Branch_data",branch_data);
@@ -63,7 +68,7 @@ public class ALU extends Module {
 			break;
 		}
 		ans.put("ALU_Result",ALU_output);
-
+		ans.put("goto",zero_control);
 
 		if (Reg_Dst==1){
 			ans.put("wb",rd);

@@ -61,6 +61,9 @@ public class ALU extends Module {
 			case "or":
 				ALU_output=Reg_data1|second_in;
 			break;
+			case "nor":
+				ALU_output=~(Reg_data1|second_in);
+			break;
 			case "slt":
 				if (Reg_data1 < second_in){
 					ALU_output=0b1L;
@@ -98,6 +101,8 @@ public class ALU extends Module {
 					return "and";
 				if (func==0b100101)
 					return "or";
+				if (func==0b100111)
+					return "nor";
 				if (func==0b101010)
 					return "slt";
 			}

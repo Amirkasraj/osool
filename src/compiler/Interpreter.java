@@ -87,7 +87,7 @@ public class Interpreter {
                 final_code=final_code+"000000"+register_num(str[2])+register_num(str[3])+register_num(str[1])+"00000"+"100101";
             break;
             case "nor":
-                //?
+                final_code=final_code+"000000"+register_num(str[2])+register_num(str[3])+register_num(str[1])+"00000"+"100111";
             break;
             case "slt":
                 final_code=final_code+"000000"+register_num(str[2])+register_num(str[3])+register_num(str[1])+"00000"+"101010";

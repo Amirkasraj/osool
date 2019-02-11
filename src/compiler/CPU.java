@@ -8,13 +8,14 @@ public class CPU {
 	private Memory insMem, dataMem, regFile;
 	private ALU centralALU;
 	private Control control;
-	private Long PC = 0x00000010L / 4;
+	private Long PC = 0x00000010L / 4 -1;
 	private Map<String,Long> forwarding;
 	private Map<Long,Long> writeBack;
 	private Long clockNumber=0L;
+	private int WAIT = 0;
 
 	private ArrayList<Module> array;
-	public Set<Long> branch_set = new HashSet<Long>();
+	public Set<Long> branch_set = new HashSet<>();
 
 	public static boolean HAZARD = true;
 
@@ -57,22 +58,47 @@ public class CPU {
 	public void clock() {
 
 		writeBack = new HashMap<>();
+		writeBack.put(-1L, MEM_WB.getOutput().get("ins"));
+
+
+		if (WAIT > 0) {
+			insMem.addToInput("write0",0L);
+			insMem.addToInput("index0",0L);
+			insMem.addToInput("pc_4",1L);
+			clockNumber++;
+			clockElements();
+			WAIT--;
+			return;
+		}
+
+		if (centralALU.getOutput()!=null && centralALU.getOutput().containsKey("Branch")
+				&& centralALU.getOutput().get("Branch")==1 &&  centralALU.getOutput().containsKey("goto")
+				&& centralALU.getOutput().get("goto")==1)
+			PC = centralALU.getOutput().get("Branch_data");
+		else
+			PC++;
+
+
 		// Hazard
 		if (HAZARD){
-			if (MEM_WB.getOutput().containsKey("data0")){
-				Long value = MEM_WB.getOutput().get("data0");
-				Long key = MEM_WB.getOutput().get("rt");
-				forwarding.put(key.toString(),value);
-			}
-			if (centralALU.getOutput().containsKey("wb")) {
-				Long key = centralALU.getOutput().get("wb");
-				Long value = centralALU.getOutput().get("ALU_Result");
-				forwarding.put(key.toString(),value);
-				writeBack.put(key,value);
-				writeBack.put(-1L,MEM_WB.getOutput().get("ins"));
-			}
 			for (String key: forwarding.keySet())
 				centralALU.addToInput(key,forwarding.get(key));
+		}
+
+
+
+		if (centralALU.getOutput().containsKey("wb")) {
+			Long key = centralALU.getOutput().get("wb");
+			Long value = centralALU.getOutput().get("ALU_Result");
+			forwarding.put(key.toString(), value);
+			writeBack.put(key, value);
+		}
+
+
+		if (MEM_WB.getOutput().containsKey("data0") && MEM_WB.getOutput().containsKey("MemtoReg") && MEM_WB.getOutput().get("MemtoReg")==1){
+			Long value = MEM_WB.getOutput().get("data0");
+			Long key = MEM_WB.getOutput().get("rt");
+			forwarding.put(key.toString(),value);
 		}
 
 		insMem.addToInput("write0",0L);
@@ -81,11 +107,11 @@ public class CPU {
 		clockNumber++;
 		clockElements();
 
-		// PC
-		if (centralALU.getOutput()!=null && centralALU.getOutput().containsKey("goto") && centralALU.getOutput().get("goto")==1)
-			PC = centralALU.getOutput().get("ALU_Result");
-		else
-			PC++;
+		if (HAZARD) {
+			if (branch_set.contains(PC)) {
+				WAIT = 2;
+			}
+		}
 
 		// WB
 
@@ -115,7 +141,7 @@ public class CPU {
 		ans += "		ID : " + Interpreter.to_binary_string(regFile.getOutput().get("ins"),32) + "\n";
 		ans += "		EX : " + Interpreter.to_binary_string(centralALU.getOutput().get("ins"),32) + "\n";
 		ans += "		MEM: " + Interpreter.to_binary_string(dataMem.getOutput().get("ins"),32) + "\n";
-		ans += "		WB : " + Interpreter.to_binary_string(writeBack.get(-1),32) + "\n";
+		ans += "		WB : " + Interpreter.to_binary_string(writeBack.get(-1L),32) + "\n";
 		ans += "\n";
 
 		ans += "	Middle registers:\n";
@@ -132,6 +158,7 @@ public class CPU {
 		ans += "			PC+4: " + EX_MEM.getOutput().get("pc_4") + "*4\n";
 		ans += "			ALU result: " + EX_MEM.getOutput().get("ALU_Result") + "\n";
 		ans += "			branch or not: " + EX_MEM.getOutput().get("goto") + "\n";
+		ans += "			branch destination: " + EX_MEM.getOutput().get("Branch_data") + "\n";
 
 		ans+="		MEM/WB: \n";
 		ans += "			PC+4: " + MEM_WB.getOutput().get("pc_4") + "*4\n";
@@ -173,7 +200,7 @@ public class CPU {
 		if (centralALU.getOutput().get("immediate")!=null)
 			value = centralALU.getOutput().get("immediate") + centralALU.getOutput().get("pc_4");
 		ans += "		Branch ALU: " + value + "\n";
-		ans += "		PC ALU: "+ PC+4 + "\n";
+		ans += "		PC ALU: "+ (PC+1) + "*4\n";
 		ans += "\n";
 
 		ans += "	Register values: \n";

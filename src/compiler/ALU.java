@@ -52,8 +52,8 @@ public class ALU extends Module {
 			break;
 			case "subtract":
 				ALU_output=Reg_data1-second_in;
-				if (ALU_output==0b0)
-					zero_control=1L;
+				if (ALU_output==0)
+					zero_control = 1L;
 			break;
 			case "and":
 				ALU_output=Reg_data1&second_in;
@@ -89,8 +89,8 @@ public class ALU extends Module {
 	public String ALU_control(Long ALU_op1,Long ALU_op2,Long func){
 		if (ALU_op1==1) {
             if (ALU_op2 == 0)
-                return "add";
-            return "subtract";
+                return "subtract";
+            return "add";
         }else{
 			if (ALU_op2==1){
 				if (func==0b100000)

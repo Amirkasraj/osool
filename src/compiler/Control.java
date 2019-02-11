@@ -39,7 +39,8 @@ public class Control extends Module {
         ans.put("shamt",shamt);
         Long func = (ins);
         ans.put("func",func);
-        Long immediate = func + (shamt<<6) + (rd<<11);
+        Long immediate = (func + (shamt<<6) + (rd<<11));
+        if ((immediate>>15)%2==1) immediate -= (1<<16);
         ans.put("immediate",immediate);
         if (opcode==0){ // r type
             //control lines

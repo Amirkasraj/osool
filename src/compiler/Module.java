@@ -18,7 +18,7 @@ public abstract class Module {
 			input = prev.getOutput();
 		if (input ==null) return;
 		posteriorOutput = process(input);
-		///?
+		priorOutput = posteriorOutput;
 	}
 
 	protected Map<String, Integer> getOutput() {
@@ -26,22 +26,11 @@ public abstract class Module {
 	}
 
 	public void update() {
-		priorOutput = posteriorOutput;
-	}
-
-	public int read(String key) {
-		return priorOutput.get(key);
-	}
-
-	public void write(String key, int value) {
-		input.put(key, value);
+		return;
 	}
 
 	abstract protected Map<String, Integer> process(Map<String, Integer> input);
 
-	public void setPrev(Module prev_) {
-		prev = prev_;
-	}
 
 	public void addToInput(String key, int value){
 		input.put(key,value);

@@ -3,6 +3,7 @@ package compiler;
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class Interpreter {
 
@@ -24,7 +25,6 @@ public class Interpreter {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        if (st == null) st="";
         return st;
     }
 
@@ -102,6 +102,21 @@ public class Interpreter {
             break;
         }
         return final_code;
+    }
+
+    public HashMap<Integer,Integer> load(Set<Integer> branch_set){
+        String s = "";
+        HashMap<Integer,Integer> init = new HashMap<>();
+        int l = 0;
+        while((s = nextInstruction())!=null) {
+            int nbin = Interpreter.to_int(Interpreter.toBinary(s));
+            int op = (nbin>>26);
+            if (op==4)
+                branch_set.add(l);
+            init.put(l,nbin);
+            l++;
+        }
+        return init;
     }
 
 

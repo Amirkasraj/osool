@@ -11,13 +11,12 @@ public class Control extends Module {
 
     @Override
     protected Map<String, Integer> process(Map<String, Integer> input) {
-        if (input==null || input.size()==0)
-            return null;
         HashMap<String,Integer> ans = new HashMap<>(input);
+        if (input == null || input.size()==0)
+            return ans;
+
         int ins = input.get("data0");
-        ans.remove("index");
-        System.out.println(ins+" data in control");
-        ans.remove("data");//؟؟
+        ans.put("ins",ins);
         int opcode = (ins>>26);
         ins^= (opcode<<26);
         ans.put("opcode",opcode);
@@ -88,8 +87,6 @@ public class Control extends Module {
                 ans.put("RegDst",0);//x
             }
         }
-
-        System.out.println(ans);
         return ans;
 
     }

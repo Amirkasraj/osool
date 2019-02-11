@@ -12,13 +12,12 @@ public class Main {
 
         Scanner sc = new Scanner(System.in);
         int clock = 0;
-        while ((clock=sc.nextInt())!=0) {
+        while ((clock=sc.nextInt())!=-1) {
             Interpreter interpreter = new Interpreter("mips.mips");
             CPU cpu = new CPU(interpreter);
             for (int c = 0; c<clock; c++)
                 cpu.clock();
-            Map<String, Integer> a = cpu.log();
-
+            System.out.println(cpu.log());
         }
     }
 }

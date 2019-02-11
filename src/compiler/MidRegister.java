@@ -7,11 +7,13 @@ public class MidRegister extends Module {
 	public MidRegister(Module prev_) {
 		super(prev_);
 	}
-	
+
 	@Override
 	public void clock() {
-		super.clock();
-		priorOutput = posteriorOutput;
+		if (prev!=null)
+			input = prev.getOutput();
+		if (input ==null) return;
+		posteriorOutput = process(input);
 	}
 
 	@Override
@@ -21,7 +23,7 @@ public class MidRegister extends Module {
 
 	@Override
 	public void update() {
-		return;
+		priorOutput = posteriorOutput;
 	}
 
 	protected Map<String,Integer>log(){return null;}

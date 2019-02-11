@@ -20,10 +20,9 @@ public class ALU extends Module {
 
 	@Override
 	protected Map<String, Integer> process(Map<String, Integer> input) {
-		if (input.equals(null) || input.size()==0)
-			return null;
 		HashMap<String,Integer>ans=new HashMap<>(input);
-		System.out.println(input);
+		if (input == null || input.size()==0) return ans;
+
         pc_4=input.get("pc_4");
         ALU_op1 = input.get("ALUOp1");
         ALU_op2 = input.get("ALUOp2");
@@ -42,7 +41,6 @@ public class ALU extends Module {
 		if (ALU_src==1)
 			second_in=offset_data;
 		int func=input.get("func");
-		System.out.println(ALU_control(ALU_op1,ALU_op2,func));
 		switch (ALU_control(ALU_op1,ALU_op2,func)){
 			case "add":
 				ALU_output=Reg_data1+second_in;
@@ -71,6 +69,10 @@ public class ALU extends Module {
 			ans.put("wb",rd);
 		}else {
 			ans.put("wb", rt);
+			ans.put("index0",ALU_output);
+			ans.put("write0",input.get("MemWrite"));
+			if (input.get("MemWrite")==1)
+				ans.put("data0",rt);
 		}
 
 		return ans;
@@ -96,22 +98,6 @@ public class ALU extends Module {
 			}
 		}
 		return "";
-	}
-
-
-	public Map<String,Integer>log(){
-		HashMap<String,Integer>report = new HashMap<>();
-		report.put("ALUOp1",ALU_op1);
-		report.put("ALUOp2",ALU_op2);
-		report.put("ALUSrc",ALU_src);
-		report.put("RegDst",Reg_Dst);
-
-		report.put("ALU_input1",Reg_data1);
-		report.put("ALU_input2",second_in);
-		report.put("ALU_output",ALU_output);
-		report.put("PC+4",pc_4);
-
-		return report;
 	}
 
 }

@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public abstract class Module {
-	protected Map<String, Integer> input,priorOutput, posteriorOutput;
+	protected Map<String, Long> input,priorOutput, posteriorOutput;
 	protected Module prev;
 
 	public Module(Module prev_) {
@@ -21,7 +21,7 @@ public abstract class Module {
 		priorOutput = posteriorOutput;
 	}
 
-	protected Map<String, Integer> getOutput() {
+	protected Map<String, Long> getOutput() {
 		return priorOutput;
 	}
 
@@ -29,10 +29,10 @@ public abstract class Module {
 		return;
 	}
 
-	abstract protected Map<String, Integer> process(Map<String, Integer> input);
+	abstract protected Map<String, Long> process(Map<String, Long> input);
 
 
-	public void addToInput(String key, int value){
+	public void addToInput(String key, Long value){
 		input.put(key,value);
 	}
 }

@@ -4,33 +4,33 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Memory extends Module{
-    private Map<Integer,Integer> mem;
+    private Map<Long,Long> mem;
 
-    public Memory(Module prev_, Map<Integer,Integer> init) {
+    public Memory(Module prev_, Map<Long,Long> init) {
         super(prev_);
-        mem = new HashMap<>(init);
+        mem = new HashMap<Long, Long>(init);
     }
 
     @Override
-    protected Map<String, Integer> process(Map<String, Integer> input) {
-        HashMap<String, Integer> ans = new HashMap<>(input);
+    protected Map<String, Long> process(Map<String, Long> input) {
+        HashMap<String, Long> ans = new HashMap<>(input);
         if (input == null || input.size()==0) return ans;
 
         Integer i=0;
         while (true) {
             if (!input.containsKey("index"+i.toString()))
                 break;
-            int index = input.get("index"+i.toString());
+            Long index = input.get("index"+i.toString());
             ans.remove("index"+i.toString());
-            int write = input.get("write"+i.toString());
+            Long write = input.get("write"+i.toString());
             ans.remove("write"+i.toString());
             if (write==1) {
-                int data = input.get("data"+i.toString());
+                Long data = input.get("data"+i.toString());
                 ans.remove("data"+i.toString());
                 mem.put(index,data);
             } else {
-                Integer value = mem.get(index);
-                if (value==null) value=0;
+                Long value = mem.get(index);
+                if (value==null) value=0L;
                 ans.put("data"+i.toString(), value);
             }
             i++;
@@ -38,9 +38,9 @@ public class Memory extends Module{
         return ans;
     }
 
-    public int read(int index) {
-        Integer ans= mem.get(index);
-        if (ans==null) ans = 0;
+    public Long read(Long index) {
+        Long ans= mem.get(index);
+        if (ans==null) ans = 0L;
         return ans;
     }
 

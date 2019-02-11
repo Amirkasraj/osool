@@ -9,18 +9,18 @@ public class ALU extends Module {
 	public ALU(Module prev_) {
 		super(prev_);
 	}
-	private int ALU_op1;
-	private int ALU_op2;
-	private int ALU_src;
-	private int Reg_Dst;
-	private int Reg_data1;
-	private int second_in;
-	private int ALU_output;
-	private int pc_4;
+	private Long ALU_op1;
+	private Long ALU_op2;
+	private Long ALU_src;
+	private Long Reg_Dst;
+	private Long Reg_data1;
+	private Long second_in;
+	private Long ALU_output;
+	private Long pc_4;
 
 	@Override
-	protected Map<String, Integer> process(Map<String, Integer> input) {
-		HashMap<String,Integer>ans=new HashMap<>(input);
+	protected Map<String, Long> process(Map<String, Long> input) {
+		HashMap<String,Long>ans=new HashMap<>(input);
 		if (input == null || input.size()==0) return ans;
 
         pc_4=input.get("pc_4");
@@ -28,24 +28,24 @@ public class ALU extends Module {
         ALU_op2 = input.get("ALUOp2");
         ALU_src = input.get("ALUSrc");
         Reg_Dst = input.get("RegDst");// az rt biad 0 , ya az rd biad 1/
-		Integer rs = input.get("rs");
-		Integer rt = input.get("rt");
-		Integer rd = input.get("rd");
+		Long rs = input.get("rs");
+		Long rt = input.get("rt");
+		Long rd = input.get("rd");
 		Reg_data1 = input.get("data0");
-		int Reg_data2 = input.get("data1");
+		Long Reg_data2 = input.get("data1");
 		ans.remove("data0");
 		ans.remove("data1");
 		ans.put(rs.toString(),Reg_data1);
 		ans.put(rt.toString(),Reg_data2);
-		int offset_data= input.get("immediate");
-		int branch_data = pc_4 + offset_data;
+		Long offset_data= input.get("immediate");
+		Long branch_data = pc_4 + offset_data;
 		ans.put("Branch_data",branch_data);
 		second_in=Reg_data2;
-		ALU_output=0b0;
-		int zero_control=0;
+		ALU_output=0b0L;
+		Long zero_control=0L;
 		if (ALU_src==1)
 			second_in=offset_data;
-		int func=input.get("func");
+		Long func=input.get("func");
 		switch (ALU_control(ALU_op1,ALU_op2,func)){
 			case "add":
 				ALU_output=Reg_data1+second_in;
@@ -53,7 +53,7 @@ public class ALU extends Module {
 			case "subtract":
 				ALU_output=Reg_data1-second_in;
 				if (ALU_output==0b0)
-					zero_control=1;
+					zero_control=1L;
 			break;
 			case "and":
 				ALU_output=Reg_data1&second_in;
@@ -63,7 +63,7 @@ public class ALU extends Module {
 			break;
 			case "slt":
 				if (Reg_data1 < second_in){
-					ALU_output=0b1;
+					ALU_output=0b1L;
 				}
 			break;
 		}
@@ -83,7 +83,7 @@ public class ALU extends Module {
 		return ans;
 	}
 
-	public String ALU_control(int ALU_op1,int ALU_op2,int func){
+	public String ALU_control(Long ALU_op1,Long ALU_op2,Long func){
 		if (ALU_op1==1) {
             if (ALU_op2 == 0)
                 return "add";

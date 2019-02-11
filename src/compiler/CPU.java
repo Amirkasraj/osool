@@ -8,13 +8,13 @@ public class CPU {
 	private Memory insMem, dataMem, regFile;
 	private ALU centralALU;
 	private Control control;
-	private int PC = 0x00000010 / 4;
-	private Map<String,Integer> forwarding;
-	private Map<Integer,Integer> writeBack;
-	private Integer clockNumber=0;
+	private Long PC = 0x00000010L / 4;
+	private Map<String,Long> forwarding;
+	private Map<Long,Long> writeBack;
+	private Long clockNumber=0L;
 
 	private ArrayList<Module> array;
-	public Set<Integer> branch_set = new HashSet<Integer>();
+	public Set<Long> branch_set = new HashSet<Long>();
 
 	public static boolean HAZARD = true;
 
@@ -23,19 +23,19 @@ public class CPU {
 	public CPU(Interpreter inter_) {
 		interpreter = inter_;
 
-		Map<Integer,Integer> init = interpreter.load(branch_set);
+		Map<Long,Long> init = interpreter.load(branch_set);
 
 		insMem = new Memory(null, init);
 		IF_ID = new MidRegister(insMem);
 		control = new Control(IF_ID);
 		init = new HashMap<>();
-		init.put(29,0x00FF0000);
+		init.put(29L,0x00FF0000L);
 		regFile = new Memory(control, init);
 		ID_EX = new MidRegister(regFile);
 		centralALU = new ALU(ID_EX);
 		EX_MEM = new MidRegister(centralALU);
 		init = new HashMap<>();
-		init.put(0x00000100,100);
+		init.put(0x00000100L,100L);
 		dataMem = new Memory(EX_MEM,init);
 		MEM_WB = new MidRegister(dataMem);
 
@@ -60,24 +60,24 @@ public class CPU {
 		// Hazard
 		if (HAZARD){
 			if (MEM_WB.getOutput().containsKey("data0")){
-				int value = MEM_WB.getOutput().get("data0");
-				Integer key = MEM_WB.getOutput().get("rt");
+				Long value = MEM_WB.getOutput().get("data0");
+				Long key = MEM_WB.getOutput().get("rt");
 				forwarding.put(key.toString(),value);
 			}
 			if (centralALU.getOutput().containsKey("wb")) {
-				Integer key = centralALU.getOutput().get("wb");
-				int value = centralALU.getOutput().get("ALU_Result");
+				Long key = centralALU.getOutput().get("wb");
+				Long value = centralALU.getOutput().get("ALU_Result");
 				forwarding.put(key.toString(),value);
 				writeBack.put(key,value);
-				writeBack.put(-1,MEM_WB.getOutput().get("ins"));
+				writeBack.put(-1L,MEM_WB.getOutput().get("ins"));
 			}
 			for (String key: forwarding.keySet())
 				centralALU.addToInput(key,forwarding.get(key));
 		}
 
-		insMem.addToInput("write0",0);
+		insMem.addToInput("write0",0L);
 		insMem.addToInput("index0",PC);
-		insMem.addToInput("pc_4",PC+1);
+		insMem.addToInput("pc_4",PC+1L);
 		clockNumber++;
 		clockElements();
 
@@ -89,11 +89,11 @@ public class CPU {
 
 		// WB
 
-		for(Integer x: writeBack.keySet()) {
+		for(Long x: writeBack.keySet()) {
 			if (x<0)
 				continue;
 			regFile.addToInput("index2",x);
-			regFile.addToInput("write2",1);
+			regFile.addToInput("write2",1L);
 			regFile.addToInput("data2",writeBack.get(x));
 		}
 	}
@@ -160,8 +160,8 @@ public class CPU {
 
 		ans += "	ALUs:\n";
 		ans += "		Main ALU:\n";
-		Integer rs = centralALU.getOutput().get("rs");
-		Integer rt = centralALU.getOutput().get("rt");
+		Long rs = centralALU.getOutput().get("rs");
+		Long rt = centralALU.getOutput().get("rt");
 		String valueS = "null";
 		if (rs!=null) valueS = centralALU.getOutput().get(rs.toString()).toString();
 		String valueT = "null";
@@ -169,7 +169,7 @@ public class CPU {
 		ans += "			Inputs: " + valueS + ", " + valueT +  "\n";
 		ans += "			Output: " + centralALU.getOutput().get("ALU_Result") + "\n";
 
-		Integer value = -1;
+		Long value = -1L;
 		if (centralALU.getOutput().get("immediate")!=null)
 			value = centralALU.getOutput().get("immediate") + centralALU.getOutput().get("pc_4");
 		ans += "		Branch ALU: " + value + "\n";
@@ -177,12 +177,12 @@ public class CPU {
 		ans += "\n";
 
 		ans += "	Register values: \n";
-		for (Integer i=0;i<=4;i++) {
+		for (Long i=0L;i<=4L;i++) {
 			String x = "$t" + i.toString();
-			ans += "		"+x+": "+ regFile.read(i+8) + "\n";
+			ans += "		"+x+": "+ regFile.read(i+8L) + "\n";
 		}
-		ans += "		$sp: " + regFile.read(29) +"\n";
-		ans += "		$ra: " + regFile.read(31) +"\n";
+		ans += "		$sp: " + regFile.read(29L) +"\n";
+		ans += "		$ra: " + regFile.read(31L) +"\n";
 
 
 		ans += "-----------------------------\n";

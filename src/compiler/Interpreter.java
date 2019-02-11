@@ -1,6 +1,7 @@
 package compiler;
 
 import java.io.*;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -25,42 +26,42 @@ public class Interpreter {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println(st);
         return st;
     }
 
     public static String register_num(String reg){
         if (reg.charAt(1)=='t'){
             if (Integer.parseInt(reg.substring(2))<8)
-                return to_binary_string(8+Integer.parseInt(reg.substring(2)),5);
-            return to_binary_string(18+Integer.parseInt(reg.substring(2)),5);
+                return to_binary_string(8+Long.parseLong(reg.substring(2)),5);
+            return to_binary_string(18+Long.parseLong(reg.substring(2)),5);
         }else if (reg.charAt(1)=='s'){
-            return to_binary_string(16+Integer.parseInt(reg.substring(2)),5);
+            return to_binary_string(16+Long.parseLong(reg.substring(2)),5);
         }else if (reg.charAt(1)=='P'&&reg.charAt(2)=='C'){
-            return to_binary_string(32,5);//?
+            return to_binary_string(32L,5);//?
         }else if (reg.charAt(1)=='a'){
-            return to_binary_string(4+Integer.parseInt(reg.substring(2)),5);
+            return to_binary_string(4+Long.parseLong(reg.substring(2)),5);
         }else if (reg.charAt(1)=='v'){
-            return to_binary_string(2+Integer.parseInt(reg.substring(2)),5);
+            return to_binary_string(2+Long.parseLong(reg.substring(2)),5);
         }else if (reg.charAt(1)=='k'){
-            return to_binary_string(26+Integer.parseInt(reg.substring(2)),5);
+            return to_binary_string(26+Long.parseLong(reg.substring(2)),5);
         }else if (reg.substring(0,2).equals("ra")){
-            return to_binary_string(31,5);
+            return to_binary_string(31L,5);
         }else if (reg.substring(0,2).equals("sp")) {
-            return to_binary_string(29, 5);
+            return to_binary_string(29L, 5);
         }else if (reg.substring(0,2).equals("$z")) {
-            return to_binary_string(0, 5);
+            return to_binary_string(0L, 5);
         }
         return "";
     }
-    public static int to_int(String binary){
+    public static Long to_int(String binary){
         if (binary.equals("")) binary = "0";
-        int r = Integer.parseInt(binary,2);
+        Long r = Long.parseUnsignedLong(binary,2);
         return r;
     }
-    public static String to_binary_string(Integer binary,int n){
+
+    public static String to_binary_string(Long binary,int n){
         if (binary==null) return "null";
-        String out = Integer.toBinaryString(binary);
+        String out = Long.toBinaryString(binary);
         while (out.length()<n)
             out="0"+out;
         return out;
@@ -71,7 +72,7 @@ public class Interpreter {
         if (code.equals(""))
             return "00000000000000000000000000000000";
 
-        String[]str = code.split(" |(|)|,");                    // TODO: "," ham masalast
+        String[]str = code.split("[ (),]");
         String final_code="";
         switch(str[0]){
             case "add":
@@ -93,25 +94,25 @@ public class Interpreter {
                 final_code=final_code+"000000"+register_num(str[2])+register_num(str[3])+register_num(str[1])+"00000"+"101010";
             break;
             case "beq":
-                final_code=final_code+"000100"+register_num(str[1])+register_num(str[2])+to_binary_string(Integer.parseInt(str[3]),16);
+                final_code=final_code+"000100"+register_num(str[1])+register_num(str[2])+to_binary_string(Long.parseLong(str[3]),16);
             break;
             case "lw":
-                final_code=final_code+"100011"+register_num(str[3])+register_num(str[1])+to_binary_string(Integer.parseInt(str[2]),16);
+                final_code=final_code+"100011"+register_num(str[3])+register_num(str[1])+to_binary_string(Long.parseLong(str[2]),16);
             break;
             case "sw":
-                final_code=final_code+"101011"+register_num(str[3])+register_num(str[1])+to_binary_string(Integer.parseInt(str[2]),16);
+                final_code=final_code+"101011"+register_num(str[3])+register_num(str[1])+to_binary_string(Long.parseLong(str[2]),16);
             break;
         }
         return final_code;
     }
 
-    public HashMap<Integer,Integer> load(Set<Integer> branch_set){
+    public HashMap<Long,Long> load(Set<Long> branch_set){
         String s = "";
-        HashMap<Integer,Integer> init = new HashMap<>();
-        int l = 0;
+        HashMap<Long,Long> init = new HashMap<>();
+        Long l = 0L;
         while((s = nextInstruction())!=null) {
-            int nbin = Interpreter.to_int(Interpreter.toBinary(s));
-            int op = (nbin>>26);
+            Long nbin = Interpreter.to_int(Interpreter.toBinary(s));
+            Long op = (nbin>>26);
             if (op==4)
                 branch_set.add(l);
             init.put(l,nbin);

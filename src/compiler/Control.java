@@ -10,84 +10,86 @@ public class Control extends Module {
     }
 
     @Override
-    protected Map<String, Integer> process(Map<String, Integer> input) {
-        HashMap<String,Integer> ans = new HashMap<>(input);
+    protected Map<String, Long> process(Map<String, Long> input) {
+        HashMap<String,Long> ans = new HashMap<>(input);
         if (input == null || input.size()==0)
             return ans;
 
-        int ins = input.get("data0");
+        Long ins = input.get("data0");
+        input.remove("data0");
         ans.put("ins",ins);
-        int opcode = (ins>>26);
+        Long opcode = (ins>>26);
         ins^= (opcode<<26);
         ans.put("opcode",opcode);
-        int rs = (ins>>21);
+        Long rs = (ins>>21);
         ins ^= (rs<<21);
         ans.put("rs",rs);
         ans.put("index0",rs);
-        ans.put("write0",0);
-        int rt = (ins>>16);
+        ans.put("write0",0l);
+        Long rt = (ins>>16);
         ins ^= (rt<<16);
         ans.put("rt",rt);
         ans.put("index1",rt);
-        ans.put("write1",0);
-        int rd = (ins>>11);
+        ans.put("write1",0l);
+        Long rd = (ins>>11);
         ins ^= (rd<<11);
         ans.put("rd",rd);
-        int shamt = (ins>>6);
+        Long shamt = (ins>>6);
         ins ^= (shamt<<6);
         ans.put("shamt",shamt);
-        int func = (ins);
+        Long func = (ins);
         ans.put("func",func);
-        int immediate = func + (shamt<<6) + (rd<<11);
+        Long immediate = func + (shamt<<6) + (rd<<11);
         ans.put("immediate",immediate);
         if (opcode==0){ // r type
             //control lines
-            ans.put("ALUOp1",0);
-            ans.put("ALUOp2",1);
-            ans.put("Branch",0);
-            ans.put("MemRead",0);
-            ans.put("MemWrite",0);
-            ans.put("MemtoReg",0);
-            ans.put("RegWrite",1);
-            ans.put("ALUSrc",0);
-            ans.put("RegDst",1);
+            ans.put("ALUOp1",0L);
+            ans.put("ALUOp2",1L);
+            ans.put("Branch",0L);
+            ans.put("MemRead",0L);
+            ans.put("MemWrite",0L);
+            ans.put("MemtoReg",0L);
+            ans.put("RegWrite",1L);
+            ans.put("ALUSrc",0L);
+            ans.put("RegDst",1L);
 
         }else {
             if (opcode==35){// lw
                 //control lines
-                ans.put("ALUOp1",0);
-                ans.put("ALUOp2",0);
-                ans.put("Branch",0);
-                ans.put("MemRead",1);
-                ans.put("MemWrite",0);
-                ans.put("MemtoReg",1);
-                ans.put("RegWrite",1);
-                ans.put("ALUSrc",1);
-                ans.put("RegDst",0);
+                ans.put("ALUOp1",0L);
+                ans.put("ALUOp2",0L);
+                ans.put("Branch",0L);
+                ans.put("MemRead",1L);
+                ans.put("MemWrite",0L);
+                ans.put("MemtoReg",1L);
+                ans.put("RegWrite",1L);
+                ans.put("ALUSrc",1L);
+                ans.put("RegDst",0L);
             }else if (opcode==43){// sw
                 //control lines
-                ans.put("ALUOp1",0);
-                ans.put("ALUOp2",0);
-                ans.put("Branch",0);
-                ans.put("MemRead",0);
-                ans.put("MemWrite",1);
-                ans.put("MemtoReg",0);//x
-                ans.put("RegWrite",0);
-                ans.put("ALUSrc",1);
-                ans.put("RegDst",0);//x
+                ans.put("ALUOp1",0L);
+                ans.put("ALUOp2",0L);
+                ans.put("Branch",0L);
+                ans.put("MemRead",0L);
+                ans.put("MemWrite",1L);
+                ans.put("MemtoReg",0L);//x
+                ans.put("RegWrite",0l);
+                ans.put("ALUSrc",1l);
+                ans.put("RegDst",0l);//x
             }else if (opcode==4){// beq
                 //control lines
-                ans.put("ALUOp1",1);
-                ans.put("ALUOp2",0);
-                ans.put("Branch",1);
-                ans.put("MemRead",0);
-                ans.put("MemWrite",0);
-                ans.put("MemtoReg",0);//x
-                ans.put("RegWrite",0);
-                ans.put("ALUSrc",0);
-                ans.put("RegDst",0);//x
+                ans.put("ALUOp1",1l);
+                ans.put("ALUOp2",0l);
+                ans.put("Branch",1l);
+                ans.put("MemRead",0l);
+                ans.put("MemWrite",0l);
+                ans.put("MemtoReg",0l);//x
+                ans.put("RegWrite",0l);
+                ans.put("ALUSrc",0l);
+                ans.put("RegDst",0l);//x
             }
         }
+
         return ans;
 
     }

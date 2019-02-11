@@ -50,7 +50,6 @@ public class Interpreter {
     }
     public static int to_int(String binary){
         int r = Integer.parseInt(binary,2);
-        System.out.println("hosss "+Integer.toBinaryString(r));
         return r;
     }
     public static String to_binary_string(int binary){
@@ -102,8 +101,6 @@ public class Interpreter {
                 final_code=final_code+"101011"+register_num(str[3])+register_num(str[1])+to_binary_string16(Integer.parseInt(str[2]));
             break;
         }
-
-        System.out.println(final_code);
         return final_code;
     }
 

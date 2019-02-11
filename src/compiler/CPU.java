@@ -3,13 +3,12 @@ package compiler;
 import java.util.*;
 
 public class CPU {
-	private MidRegister PC, IF_ID, ID_EX, EX_MEM, MEM_WB;
+	private  MidRegister IF_ID, ID_EX, EX_MEM, MEM_WB;
 	private Interpreter interpreter;
-	private Memory insMem, dataMem;
-	private RegisterFile regFile;
+	private Memory insMem, dataMem, regFile;
 	private ALU centralALU;
 	private Control control;
-	private Forward forward;
+	private int PC = 0x00000010 / 4;
 
 	private ArrayList<Module> array;
 	public Set<Integer> branch_set = new HashSet<Integer>();
@@ -24,35 +23,26 @@ public class CPU {
 		Map<Integer,Integer> init = new HashMap<>();
 		for (int l=0;l<MAXMEM;l++) {
 			String s = interpreter.nextInstruction();
-			System.out.println(s);
 			String sbin = Interpreter.toBinary(s);
-			System.out.println(sbin);
 			int nbin = Interpreter.to_int(sbin);
 			int op = (nbin>>26);
 			if (op==4)
 				branch_set.add(l);
-		//	System.out.println(Integer.toBinaryString(nbin));
 			init.put(l,nbin);
 		}
 
-		PC = new MidRegister(null);
-		PC.addToInput("index",0x00000010 / 4);
-		insMem = new Memory(PC, init);
+		insMem = new Memory(null, init);
 		IF_ID = new MidRegister(insMem);
 		control = new Control(IF_ID);
-
-		ID_EX = new MidRegister(null);
+		init = new HashMap<>();
+		regFile = new Memory(control, init);
+		ID_EX = new MidRegister(regFile);
 		centralALU = new ALU(ID_EX);
-		forward = new Forward(centralALU);
 		EX_MEM = new MidRegister(centralALU);
-
 		dataMem = new Memory(EX_MEM,init);
 		MEM_WB = new MidRegister(dataMem);
-		regFile = new RegisterFile(control, init, MEM_WB);
-		ID_EX.setPrev(regFile);
 
 		array = new ArrayList<>();
-		array.add(PC);
 		array.add(insMem);
 		array.add(IF_ID);
 		array.add(control);
@@ -67,23 +57,28 @@ public class CPU {
 
 	public void clock() {
 
+		// Hazard
+//		if (HAZARD){
+//			for (String x: forward.getOutput().keySet())
+//				centralALU.addToInput(x,forward.getOutput().get(x));
+//			if (branch_set.contains(PC)) { // pc in set
+//				clockElements();
+//				clockElements();
+//				clockElements();
+//			}
+//		}
+
+		insMem.addToInput("write0",0);
+		insMem.addToInput("index0",PC);
+		insMem.addToInput("pc_4",PC+1);
 		clockElements();
 
-		if (HAZARD){
-			for (String x: forward.getOutput().keySet())
-				centralALU.addToInput(x,forward.getOutput().get(x));
-			int pc = PC.getOutput().get("index");
-			if (branch_set.contains(pc)) { // pc in set
-				clockElements();
-				clockElements();
-				clockElements();
-			}
-		}
-
+		// PC
 		if (centralALU.getOutput()!=null && centralALU.getOutput().containsKey("branch"))
-			PC.addToInput("index", centralALU.getOutput().get("immediate"));
+			PC = centralALU.getOutput().get("ALU_Result");
 		else
-			PC.addToInput("index", PC.getOutput().get("index")+1);
+			PC++;
+
 
 	}
 

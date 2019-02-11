@@ -14,11 +14,8 @@ public class Control extends Module {
         if (input==null || input.size()==0)
             return null;
         HashMap<String,Integer> ans = new HashMap<>(input);
-        int ins = input.get("data");
-        int pc4 = input.get("index");
-        pc4+=1;
+        int ins = input.get("data0");
         ans.remove("index");
-        ans.put("pc_4",pc4);
         System.out.println(ins+" data in control");
         ans.remove("data");//؟؟
         int opcode = (ins>>26);
@@ -26,10 +23,13 @@ public class Control extends Module {
         ans.put("opcode",opcode);
         int rs = (ins>>21);
         ins ^= (rs<<21);
-        ans.put("rs",rs);
+        ans.put("index0",rs);
+        ans.put("write0",0);
         int rt = (ins>>16);
         ins ^= (rt<<16);
         ans.put("rt",rt);
+        ans.put("index1",rt);
+        ans.put("write1",0);
         int rd = (ins>>11);
         ins ^= (rd<<11);
         ans.put("rd",rd);

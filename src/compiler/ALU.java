@@ -15,10 +15,6 @@ public class ALU extends Module {
 	private int Reg_Dst;
 	private int Reg_data1;
 	private int second_in;
-	private int branch;
-	private int MemRead;
-	private int MemWrite;
-	private int MemtoReg;
 	private int ALU_output;
 	private int pc_4;
 
@@ -33,15 +29,11 @@ public class ALU extends Module {
         ALU_op2 = input.get("ALUOp2");
         ALU_src = input.get("ALUSrc");
         Reg_Dst = input.get("RegDst");// az rt biad 0 , ya az rd biad 1/
-		Integer rs = input.get("rs");
-		Integer rt = input.get("rt");
 		Integer rd = input.get("rd");
-		Reg_data1 = input.get(rs.toString());
-		int Reg_data2 = input.get(rt.toString());
+		Integer rt = input.get("rt");
+		Reg_data1 = input.get("data0");
+		int Reg_data2 = input.get("data1");
 		int offset_data= input.get("immediate");
-		// integer binary ??!!! important!
-		// int pc+4
-		//int other control lines
 		int branch_data = pc_4 + offset_data;
 		ans.put("Branch_data",branch_data);
 		second_in=Reg_data2;
@@ -72,36 +64,25 @@ public class ALU extends Module {
 				}
 			break;
 		}
-		branch=input.get("Branch");
-		MemRead=input.get("MemRead");
-		MemWrite=input.get("MemWrite");
-		MemtoReg=input.get("MemtoReg");
-
-		branch = (zero_control & branch);
 		ans.put("ALU_Result",ALU_output);
-		ans.put("Branch",branch);
-		ans.put("MemRead",MemRead);
-		ans.put("MemWrite",MemWrite);
-		ans.put("MemtoReg",MemtoReg);
 
 
 		if (Reg_Dst==1){
 			ans.put("wb",rd);
 		}else {
-		    ans.put("wb",rt);
-        }
-
+			ans.put("wb", rt);
+		}
 
 		return ans;
 	}
 
 	public String ALU_control(int ALU_op1,int ALU_op2,int func){
-		if (ALU_op2==0) {
-            if (ALU_op1 == 0)
+		if (ALU_op1==1) {
+            if (ALU_op2 == 0)
                 return "add";
             return "subtract";
         }else{
-			if (ALU_op1==0){
+			if (ALU_op2==1){
 				if (func==0b100000)
 					return "add";
 				if (func==0b100010)
@@ -124,10 +105,6 @@ public class ALU extends Module {
 		report.put("ALUOp2",ALU_op2);
 		report.put("ALUSrc",ALU_src);
 		report.put("RegDst",Reg_Dst);
-		report.put("Branch",branch);
-		report.put("MemRead",MemRead);
-		report.put("MemWrite",MemWrite);
-		report.put("MemtoReg",MemtoReg);
 
 		report.put("ALU_input1",Reg_data1);
 		report.put("ALU_input2",second_in);

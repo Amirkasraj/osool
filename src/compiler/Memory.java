@@ -16,21 +16,27 @@ public class Memory extends Module{
 
     @Override
     protected Map<String, Integer> process(Map<String, Integer> input) {
-        if (input==null || !(input.containsKey("index")))
+        if (input==null || !(input.containsKey("index0")))
             return null;
         HashMap<String, Integer> ans = new HashMap<>(input);
 
-        int index = input.get("index");
-        //ans.remove("index");
-        if (input.containsKey("write")) {
-            ans.remove("write");
-            int data = input.get("data");
-            ans.remove("data");
-            arr[index] = data;
-        } else {
-            ans.put("data",arr[index]);
+        Integer i=0;
+        while (true) {
+            if (!input.containsKey("index"+i.toString()))
+                break;
+            int index = input.get("index"+i.toString());
+            ans.remove("index"+i.toString());
+            int write = input.get("write"+i.toString());
+            ans.remove("write"+i.toString());
+            if (write==1) {
+                int data = input.get("data"+i.toString());
+                ans.remove("data"+i.toString());
+                arr[index] = data;
+            } else {
+                ans.put("data"+i.toString(), arr[index]);
+            }
+            i++;
         }
-
         return ans;
     }
 

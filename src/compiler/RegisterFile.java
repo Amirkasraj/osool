@@ -21,6 +21,7 @@ public class RegisterFile extends Memory {
 
     @Override
     protected Map<String, Integer> process(Map<String, Integer> input) {
+        System.out.println(input);
         if (input==null || input.size()==0)
             return null;
         HashMap <String,Integer> ans = new HashMap<>(input);
@@ -34,6 +35,8 @@ public class RegisterFile extends Memory {
             int value = wb.getOutput().get(index.toString());
             arr[index] = value;
         }
+        // ToDo: wb
+
         return ans;
     }
 }

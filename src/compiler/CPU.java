@@ -16,7 +16,7 @@ public class CPU {
 
 
 	public static int MAXMEM = 100;
-	public static boolean HAZARD = true;
+	public static boolean HAZARD = false;
 
 	public CPU(Interpreter inter_) {
 		interpreter = inter_;

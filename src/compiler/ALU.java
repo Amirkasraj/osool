@@ -20,15 +20,15 @@ public class ALU extends Module {
 	private int MemWrite;
 	private int MemtoReg;
 	private int ALU_output;
-	private int Pc_4;
+	private int pc_4;
 
 	@Override
 	protected Map<String, Integer> process(Map<String, Integer> input) {
 		if (input.equals(null) || input.size()==0)
 			return null;
 		HashMap<String,Integer>ans=new HashMap<>(input);
-
-        Pc_4=input.get("pc_4");
+		System.out.println(input);
+        pc_4=input.get("pc_4");
         ALU_op1 = input.get("ALUOp1");
         ALU_op2 = input.get("ALUOp2");
         ALU_src = input.get("ALUSrc");
@@ -42,14 +42,15 @@ public class ALU extends Module {
 		// integer binary ??!!! important!
 		// int pc+4
 		//int other control lines
-		int branch_data = Pc_4 + offset_data;
+		int branch_data = pc_4 + offset_data;
 		ans.put("Branch_data",branch_data);
 		second_in=Reg_data2;
 		ALU_output=0b0;
 		int zero_control=0;
 		if (ALU_src==1)
 			second_in=offset_data;
-		int func=(offset_data<<26);
+		int func=input.get("func");
+		System.out.println(ALU_control(ALU_op1,ALU_op2,func));
 		switch (ALU_control(ALU_op1,ALU_op2,func)){
 			case "add":
 				ALU_output=Reg_data1+second_in;
@@ -131,7 +132,7 @@ public class ALU extends Module {
 		report.put("ALU_input1",Reg_data1);
 		report.put("ALU_input2",second_in);
 		report.put("ALU_output",ALU_output);
-		report.put("PC+4",Pc_4);
+		report.put("PC+4",pc_4);
 
 		return report;
 	}

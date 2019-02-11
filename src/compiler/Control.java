@@ -30,15 +30,17 @@ public class Control extends Module {
         int rt = (ins>>16);
         ins ^= (rt<<16);
         ans.put("rt",rt);
+        int rd = (ins>>11);
+        ins ^= (rd<<11);
+        ans.put("rd",rd);
+        int shamt = (ins>>6);
+        ins ^= (shamt<<6);
+        ans.put("shamt",shamt);
+        int func = (ins);
+        ans.put("func",func);
+        int immediate = func + (shamt<<6) + (rd<<11);
+        ans.put("immediate",immediate);
         if (opcode==0){ // r type
-            int rd = (ins>>11);
-            ins ^= (rd<<11);
-            ans.put("rd",rd);
-            int shamt = (ins>>6);
-            ins ^= (shamt<<6);
-            ans.put("shamt",shamt);
-            int func = (ins);
-            ans.put("func",func);
             //control lines
             ans.put("ALUOp1",0);
             ans.put("ALUOp2",1);
@@ -51,8 +53,6 @@ public class Control extends Module {
             ans.put("RegDst",1);
 
         }else {
-            int immediate = ins;
-            ans.put("immediate",immediate);
             if (opcode==35){// lw
                 //control lines
                 ans.put("ALUOp1",0);

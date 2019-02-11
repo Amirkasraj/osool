@@ -24,14 +24,14 @@ public class CPU {
 		Map<Integer,Integer> init = new HashMap<>();
 		for (int l=0;l<MAXMEM;l++) {
 			String s = interpreter.nextInstruction();
-			//System.out.println(s);
+			System.out.println(s);
 			String sbin = Interpreter.toBinary(s);
-			//System.out.println(sbin);
+			System.out.println(sbin);
 			int nbin = Interpreter.to_int(sbin);
 			int op = (nbin>>26);
 			if (op==4)
 				branch_set.add(l);
-			//System.out.println(nbin);
+		//	System.out.println(Integer.toBinaryString(nbin));
 			init.put(l,nbin);
 		}
 

@@ -1,6 +1,8 @@
 package compiler;
 
 import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Interpreter {
 
@@ -47,7 +49,9 @@ public class Interpreter {
         return "";
     }
     public static int to_int(String binary){
-        return Integer.parseInt(binary,2);
+        int r = Integer.parseInt(binary,2);
+        System.out.println("hosss "+Integer.toBinaryString(r));
+        return r;
     }
     public static String to_binary_string(int binary){
         String out = Integer.toBinaryString(binary);
@@ -62,16 +66,18 @@ public class Interpreter {
         return out;
     }
     public static String toBinary(String code) {
+        Map<String,Integer> binary = new HashMap<>();
         if (code.equals(""))
             return "00000000000000000000000000000000";
+
         String[]str = code.split(" ()");                    // TODO: "," ham masalast
         String final_code="";
         switch(str[0]){
             case "add":
                 final_code=final_code+"000000"+register_num(str[2])+register_num(str[3])+register_num(str[1])+"00000"+"100000";
-
             break;
             case "sub":
+                System.out.println("Hi 0080");
                 final_code=final_code+"000000"+register_num(str[2])+register_num(str[3])+register_num(str[1])+"00000"+"100010";
             break;
             case "and":
@@ -97,7 +103,7 @@ public class Interpreter {
             break;
         }
 
-
+        System.out.println(final_code);
         return final_code;
     }
 

@@ -96,12 +96,12 @@ public class ALU extends Module {
 	}
 
 	public String ALU_control(int ALU_op1,int ALU_op2,int func){
-		if (ALU_op1==0) {
-            if (ALU_op2 == 0)
+		if (ALU_op2==0) {
+            if (ALU_op1 == 0)
                 return "add";
             return "subtract";
         }else{
-			if (ALU_op2==0){
+			if (ALU_op1==0){
 				if (func==0b100000)
 					return "add";
 				if (func==0b100010)

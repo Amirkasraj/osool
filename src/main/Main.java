@@ -17,7 +17,9 @@ public class Main {
             CPU cpu = new CPU(interpreter);
             for (int c = 0; c<clock; c++)
                 cpu.clock();
-            System.out.println(cpu.log());
+            String log = cpu.log();
+            System.out.println(log);
+
         }
     }
 }

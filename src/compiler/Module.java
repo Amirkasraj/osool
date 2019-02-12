@@ -15,7 +15,7 @@ public abstract class Module {
 
 	public void clock() {
 		if (prev!=null)
-			input = prev.getOutput();
+			input.putAll(prev.getOutput());
 		if (input ==null) return;
 		posteriorOutput = process(input);
 		priorOutput = posteriorOutput;
@@ -26,6 +26,7 @@ public abstract class Module {
 	}
 
 	public void update() {
+		input = new HashMap<>();
 		return;
 	}
 

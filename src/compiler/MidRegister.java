@@ -1,5 +1,6 @@
 package compiler;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class MidRegister extends Module {
@@ -11,7 +12,7 @@ public class MidRegister extends Module {
 	@Override
 	public void clock() {
 		if (prev!=null)
-			input = prev.getOutput();
+			input.putAll(prev.getOutput());
 		if (input ==null) return;
 		posteriorOutput = process(input);
 	}
@@ -24,6 +25,7 @@ public class MidRegister extends Module {
 	@Override
 	public void update() {
 		priorOutput = posteriorOutput;
+		input = new HashMap<>();
 	}
 
 	protected Map<String,Integer>log(){return null;}

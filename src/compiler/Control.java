@@ -16,7 +16,7 @@ public class Control extends Module {
             return ans;
 
         Long ins = input.get("data0");
-        input.remove("data0");
+        ans.remove("data0");
         ans.put("ins",ins);
         Long opcode = (ins>>26);
         ins^= (opcode<<26);
@@ -51,8 +51,8 @@ public class Control extends Module {
         ans.put("immediex",immediateExtended);
         if (opcode==0){ // r type
             //control lines
-            ans.put("ALUOp1",0L);
-            ans.put("ALUOp2",1L);
+            ans.put("ALUOp1",1L);
+            ans.put("ALUOp2",0L);
             ans.put("Branch",0L);
             ans.put("MemRead",0L);
             ans.put("MemWrite",0L);
@@ -86,8 +86,8 @@ public class Control extends Module {
                 ans.put("RegDst",0l);//x
             }else if (opcode==4){// beq
                 //control lines
-                ans.put("ALUOp1",1l);
-                ans.put("ALUOp2",0l);
+                ans.put("ALUOp1",0l);
+                ans.put("ALUOp2",1l);
                 ans.put("Branch",1l);
                 ans.put("MemRead",0l);
                 ans.put("MemWrite",0l);
@@ -97,6 +97,8 @@ public class Control extends Module {
                 ans.put("RegDst",0l);//x
             }
         }
+
+        priorOutput = ans;
 
         return ans;
 

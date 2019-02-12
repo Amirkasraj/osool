@@ -16,6 +16,9 @@ public class Memory extends Module{
         HashMap<String, Long> ans = new HashMap<>(input);
         if (input == null || input.size()==0) return ans;
 
+
+        HashMap<Long,String> toRead = new HashMap<>();
+
         Integer i=0;
         while (true) {
             if (!input.containsKey("index"+i.toString()))
@@ -27,14 +30,20 @@ public class Memory extends Module{
             if (write==1) {
                 Long data = input.get("data"+i.toString());
                 ans.remove("data"+i.toString());
-                mem.put(index,data);
+                if (data!=0) {
+                    mem.put(index, data);
+                }
             } else {
-                Long value = mem.get(index);
-                if (value==null) value=0L;
-                ans.put("data"+i.toString(), value);
+                toRead.put(index,"data"+i.toString());
             }
             i++;
         }
+        for (Long index: toRead.keySet()) {
+            Long value = mem.get(index);
+            if (value==null) value=0L;
+            ans.put(toRead.get(index), value);
+        }
+        priorOutput = ans;
         return ans;
     }
 

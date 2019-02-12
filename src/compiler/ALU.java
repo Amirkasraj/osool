@@ -20,6 +20,7 @@ public class ALU extends Module {
 
 	@Override
 	protected Map<String, Long> process(Map<String, Long> input) {
+		System.out.println(input);
 		HashMap<String,Long>ans=new HashMap<>(input);
 		if (input == null || input.size()==0) return ans;
 
@@ -31,6 +32,7 @@ public class ALU extends Module {
 		Long rs = input.get("rs");
 		Long rt = input.get("rt");
 		Long rd = input.get("rd");
+		System.out.println(rs + " " + rt + " " + rd);
 		Reg_data1 = input.get("data0");
 		Long Reg_data2 = input.get("data1");
 		ans.remove("data0");
@@ -43,16 +45,17 @@ public class ALU extends Module {
 		second_in=Reg_data2;
 		ALU_output=0b0L;
 		Long zero_control=0L;
-		if (ALU_src==1)
+		if (ALU_src==1L)
 			second_in=offset_data;
 		Long func=input.get("func");
 		switch (ALU_control(ALU_op1,ALU_op2,func)){
 			case "add":
+				System.out.println(ALU_output+ " " + Reg_data1+ " " + second_in);
 				ALU_output=Reg_data1+second_in;
 			break;
 			case "subtract":
 				ALU_output=Reg_data1-second_in;
-				if (ALU_output==0)
+				if (ALU_output==0L)
 					zero_control = 1L;
 			break;
 			case "and":
@@ -73,7 +76,7 @@ public class ALU extends Module {
 		ans.put("ALU_Result",ALU_output);
 		ans.put("goto",zero_control);
 
-		if (Reg_Dst==1){
+		if (Reg_Dst==1L){
 			ans.put("wb",rd);
 		}else {
 			ans.put("wb", rt);
@@ -82,27 +85,29 @@ public class ALU extends Module {
 			if (input.get("MemWrite")==1)
 				ans.put("data0",rt);
 		}
+
+		priorOutput = ans;
 		return ans;
 	}
 
 	public String ALU_control(Long ALU_op1,Long ALU_op2,Long func){
-		if (ALU_op1==1) {
-            if (ALU_op2 == 0)
+		if (ALU_op1 == 0L) {
+            if (ALU_op2 == 1L)
                 return "subtract";
             return "add";
         }else{
-			if (ALU_op2==1){
-				if (func==0b100000)
+			if (ALU_op2.equals(0L)){
+				if (func==0b100000L)
 					return "add";
-				if (func==0b100010)
+				if (func==0b100010L)
 					return "subtract";
-				if (func==0b100100)
+				if (func==0b100100L)
 					return "and";
-				if (func==0b100101)
+				if (func==0b100101L)
 					return "or";
-				if (func==0b100111)
+				if (func==0b100111L)
 					return "nor";
-				if (func==0b101010)
+				if (func==0b101010L)
 					return "slt";
 			}
 		}

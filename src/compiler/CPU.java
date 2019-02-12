@@ -130,6 +130,7 @@ public class CPU {
 		clockNumber++;
 		clockElements();
 
+		System.out.println(centralALU.getOutput());
 
 	}
 

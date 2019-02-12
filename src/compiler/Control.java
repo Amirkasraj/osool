@@ -40,8 +40,15 @@ public class Control extends Module {
         Long func = (ins);
         ans.put("func",func);
         Long immediate = (func + (shamt<<6) + (rd<<11));
-        if ((immediate>>15)%2==1) immediate -= (1<<16);
+        Long immediateExtended = immediate;
+        if ((immediate>>15)%2==1) {
+            immediate -= (1 << 16);
+            for (int i=16;i<32;i++)
+                immediateExtended+=(1L<<i);
+            immediateExtended -= (1L<<32);
+        }
         ans.put("immediate",immediate);
+        ans.put("immediex",immediateExtended);
         if (opcode==0){ // r type
             //control lines
             ans.put("ALUOp1",0L);

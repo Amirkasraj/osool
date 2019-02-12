@@ -132,10 +132,8 @@ public class Interpreter {
         while((s = nextInstruction())!=null) {
             Long nbin = Interpreter.to_int(Interpreter.toBinary(s));
             Long op = (nbin>>26);
-            if (op==4) {
+            if (op==4L)
                 branch_set.add(l);
-
-            }
             init.put(l,nbin);
             l++;
         }

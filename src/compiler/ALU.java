@@ -37,7 +37,7 @@ public class ALU extends Module {
 		ans.remove("data1");
 		ans.put(rs.toString(),Reg_data1);
 		ans.put(rt.toString(),Reg_data2);
-		Long offset_data= input.get("immediate");
+		Long offset_data= input.get("immediex");
 		Long branch_data = pc_4 + offset_data;
 		ans.put("Branch_data",branch_data);
 		second_in=Reg_data2;
@@ -82,7 +82,6 @@ public class ALU extends Module {
 			if (input.get("MemWrite")==1)
 				ans.put("data0",rt);
 		}
-
 		return ans;
 	}
 

@@ -13,6 +13,7 @@ public class CPU {
 	private Map<Long,Long> writeBack;
 	private Long clockNumber=0L;
 	private int WAIT = 0;
+	private Long temp = 0L;
 
 	private ArrayList<Module> array;
 	public Set<Long> branch_set = new HashSet<>();
@@ -60,7 +61,36 @@ public class CPU {
 		writeBack = new HashMap<>();
 		writeBack.put(-1L, MEM_WB.getOutput().get("ins"));
 
+		// LW
+		if (MEM_WB.getOutput().containsKey("RegWrite") && MEM_WB.getOutput().get("RegWrite")==1 && MEM_WB.getOutput().get("MemtoReg") == 1) {
+			Long value = MEM_WB.getOutput().get("data0");
+			Long key = MEM_WB.getOutput().get("rt");
+			forwarding.put(key.toString(), value);
+			writeBack.put(key, value);
+		}
 
+		// R
+		if (centralALU.getOutput().containsKey("RegDst") && centralALU.getOutput().get("RegDst")==1) {
+			Long key = centralALU.getOutput().get("rd");
+			Long value = centralALU.getOutput().get("ALU_Result");
+			forwarding.put(key.toString(), value);
+			writeBack.put(key, value);
+		}
+
+		// BEQ?
+		if (HAZARD) {
+			if (branch_set.contains(PC)) {
+				WAIT = 2;
+				System.out.println("GINKS");
+				temp = PC;
+				PC=0L;
+			}
+		}
+
+		System.out.println(WAIT);
+		System.out.println(branch_set);
+
+		// BUBBLE
 		if (WAIT > 0) {
 			insMem.addToInput("write0",0L);
 			insMem.addToInput("index0",0L);
@@ -68,37 +98,34 @@ public class CPU {
 			clockNumber++;
 			clockElements();
 			WAIT--;
+			if (WAIT==0) PC=temp+1;
 			return;
 		}
 
+		// PC
 		if (centralALU.getOutput()!=null && centralALU.getOutput().containsKey("Branch")
 				&& centralALU.getOutput().get("Branch")==1 &&  centralALU.getOutput().containsKey("goto")
 				&& centralALU.getOutput().get("goto")==1)
 			PC = centralALU.getOutput().get("Branch_data");
 		else
-			PC++;
+			if (centralALU.getOutput()!=null && centralALU.getOutput().containsKey("Branch")
+				&& centralALU.getOutput().get("Branch")==1 && centralALU.getOutput().containsKey("pc_4"))
+				PC = centralALU.getOutput().get("pc_4");
+			else PC++;
 
+		// WB
+		for(Long x: writeBack.keySet()) {
+			if (x<0)
+				continue;
+			regFile.addToInput("index2",x);
+			regFile.addToInput("write2",1L);
+			regFile.addToInput("data2",writeBack.get(x));
+		}
 
 		// Hazard
 		if (HAZARD){
 			for (String key: forwarding.keySet())
 				centralALU.addToInput(key,forwarding.get(key));
-		}
-
-
-
-		if (centralALU.getOutput().containsKey("wb")) {
-			Long key = centralALU.getOutput().get("wb");
-			Long value = centralALU.getOutput().get("ALU_Result");
-			forwarding.put(key.toString(), value);
-			writeBack.put(key, value);
-		}
-
-
-		if (MEM_WB.getOutput().containsKey("data0") && MEM_WB.getOutput().containsKey("MemtoReg") && MEM_WB.getOutput().get("MemtoReg")==1){
-			Long value = MEM_WB.getOutput().get("data0");
-			Long key = MEM_WB.getOutput().get("rt");
-			forwarding.put(key.toString(),value);
 		}
 
 		insMem.addToInput("write0",0L);
@@ -107,21 +134,7 @@ public class CPU {
 		clockNumber++;
 		clockElements();
 
-		if (HAZARD) {
-			if (branch_set.contains(PC)) {
-				WAIT = 2;
-			}
-		}
 
-		// WB
-
-		for(Long x: writeBack.keySet()) {
-			if (x<0)
-				continue;
-			regFile.addToInput("index2",x);
-			regFile.addToInput("write2",1L);
-			regFile.addToInput("data2",writeBack.get(x));
-		}
 	}
 
 	private void clockElements(){
@@ -152,7 +165,7 @@ public class CPU {
 		ans += "			PC+4: " + ID_EX.getOutput().get("pc_4") + "*4\n";
 		ans += "			rs: " + Interpreter.to_binary_string(ID_EX.getOutput().get("rs"),5) + "\n";
 		ans += "			rt: " + Interpreter.to_binary_string(ID_EX.getOutput().get("rt"),5) + "\n";
-		ans += "			immediate: " + Interpreter.to_binary_string(ID_EX.getOutput().get("immediate"),16) + "\n";
+		ans += "			immediate sign extended: " + Interpreter.to_binary_string(ID_EX.getOutput().get("immediex"),32) + "\n";
 
 		ans+="		EX/MEM: \n";
 		ans += "			PC+4: " + EX_MEM.getOutput().get("pc_4") + "*4\n";
@@ -211,6 +224,8 @@ public class CPU {
 		ans += "		$sp: " + regFile.read(29L) +"\n";
 		ans += "		$ra: " + regFile.read(31L) +"\n";
 
+		ans += "	Forwarding: \n";
+		ans += "		" + forwarding.toString() + "\n";
 
 		ans += "-----------------------------\n";
 		return ans;

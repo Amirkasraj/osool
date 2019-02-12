@@ -87,9 +87,6 @@ public class CPU {
 			}
 		}
 
-		System.out.println(WAIT);
-		System.out.println(branch_set);
-
 		// BUBBLE
 		if (WAIT > 0) {
 			insMem.addToInput("write0",0L);

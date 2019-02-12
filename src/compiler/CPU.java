@@ -16,7 +16,7 @@ public class CPU {
 	private Long temp = 0L;
 
 	private ArrayList<Module> array;
-	public Set<Long> branch_set = new HashSet<>();
+	public HashMap<Long,Integer> waits = new HashMap<>();
 
 	public static boolean HAZARD = true;
 
@@ -25,7 +25,7 @@ public class CPU {
 	public CPU(Interpreter inter_) {
 		interpreter = inter_;
 
-		Map<Long,Long> init = interpreter.load(branch_set);
+		Map<Long,Long> init = interpreter.load(waits);
 
 		insMem = new Memory(null, init);
 		IF_ID = new MidRegister(insMem);
@@ -79,9 +79,8 @@ public class CPU {
 
 		// BEQ?
 		if (HAZARD) {
-			if (branch_set.contains(PC)) {
-				WAIT = 2;
-				System.out.println("GINKS");
+			if (waits.containsKey(PC)) {
+				WAIT = waits.get(PC);
 				temp = PC;
 				PC=0L;
 			}
@@ -90,8 +89,8 @@ public class CPU {
 		// BUBBLE
 		if (WAIT > 0) {
 			insMem.addToInput("write0",0L);
-			insMem.addToInput("index0",0L);
-			insMem.addToInput("pc_4",1L);
+			insMem.addToInput("index0",PC);
+			insMem.addToInput("pc_4",PC+1L);
 			clockNumber++;
 			clockElements();
 			WAIT--;

@@ -125,7 +125,7 @@ public class Interpreter {
         return final_code;
     }
 
-    public HashMap<Long,Long> load(Set<Long> branch_set){
+    public HashMap<Long,Long> load(HashMap<Long,Integer> waits){
         String s = "";
         HashMap<Long,Long> init = new HashMap<>();
         Long l = 0L;
@@ -133,7 +133,9 @@ public class Interpreter {
             Long nbin = Interpreter.to_int(Interpreter.toBinary(s));
             Long op = (nbin>>26);
             if (op==4L)
-                branch_set.add(l);
+                waits.put(l,2);
+            if (op==35)
+                waits.put(l,1);
             init.put(l,nbin);
             l++;
         }
